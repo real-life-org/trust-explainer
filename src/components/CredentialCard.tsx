@@ -1,14 +1,14 @@
 import React from 'react';
 import { C, FONT, MONO, PEOPLE } from '../theme';
-import { TRAY, type Who } from '../layout';
+import { DOCK, type Who } from '../layout';
 import { Icon } from './Icons';
 
 /** The site's encounter credential row (.tp-cred), in the light phone palette. */
 export const CredentialCard: React.FC<{ from: Who; to: Who }> = ({ from, to }) => (
   <div
     style={{
-      width: TRAY.slotW,
-      height: TRAY.slotH,
+      width: DOCK.w,
+      height: DOCK.h,
       boxSizing: 'border-box',
       display: 'flex',
       alignItems: 'center',

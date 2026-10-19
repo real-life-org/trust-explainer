@@ -60,6 +60,7 @@ export const Encounter: React.FC = () => {
               { name: 'Clara', initial: 'C', trusted: true },
               { name: 'Dev', initial: 'D', trusted: false },
             ]}
+            roomAt={rel(T.credToRow.from, T.contacts)}
             newRowAt={rel(T.contacts.newRow, T.contacts)}
             trust={{ highlightAt: rel(T.trust.from, T.contacts), tapAt: rel(T.trust.tap, T.contacts) }}
           />
@@ -84,6 +85,7 @@ export const Encounter: React.FC = () => {
               { name: 'Eli', initial: 'E', trusted: true },
               { name: 'Kai', initial: 'K', trusted: false },
             ]}
+            roomAt={rel(T.credToRow.from, T.contacts)}
             newRowAt={rel(T.contacts.newRow, T.contacts)}
           />
         </Sequence>

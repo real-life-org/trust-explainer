@@ -1,29 +1,34 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, interpolateColors, useCurrentFrame } from 'remotion';
 import { C, NEUTRAL, type Tone } from '../theme';
+import { ROWS } from '../layout';
 import { Icon } from '../components/Icons';
 import { Avatar, Tap, usePress, useSequenceFade, useSpringAt } from '../components/ui';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
-const ROW_TOP = 132;
-const ROW_H = 84;
+const ROW_TOP = ROWS.top;
+const ROW_H = ROWS.h;
 
 type Person = { name: string; initial: string; tone?: Tone };
 
 /**
  * Step 6 (new contact in the list) and, when `trust` is given, step 7: the
  * user marks the new contact as trusted with one deliberate tap.
+ * The new row takes over from the received credential, which jumps onto its
+ * place (see CredentialFlight); the row keeps a green "signed" line.
  * All frame props are relative to this Sequence.
  */
 export const Contacts: React.FC<{
   peer: Person;
   others: Array<Person & { trusted: boolean }>;
+  roomAt: number;
   newRowAt: number;
   trust?: { highlightAt: number; tapAt: number };
-}> = ({ peer, others, newRowAt, trust }) => {
+}> = ({ peer, others, roomAt, newRowAt, trust }) => {
   const frame = useCurrentFrame();
   const opacity = useSequenceFade(8, 0);
-  const inP = useSpringAt(newRowAt);
+  const room = useSpringAt(roomAt, 200, 14);
+  const inP = interpolate(frame, [newRowAt, newRowAt + 5], [0, 1], clamp);
   const fresh = interpolate(frame, [newRowAt, newRowAt + 10, newRowAt + 70], [0, 1, 0.4], clamp);
 
   return (
@@ -41,10 +46,9 @@ export const Contacts: React.FC<{
           borderRadius: 16,
           background: `oklch(93% 0.05 264 / ${fresh})`,
           opacity: inP,
-          transform: `translateY(${(1 - inP) * -20}px)`,
         }}
       >
-        <Row person={peer}>{trust ? <TrustButton {...trust} /> : <TrustButtonIdle />}</Row>
+        <Row person={peer} signed>{trust ? <TrustButton {...trust} /> : <TrustButtonIdle />}</Row>
         <div
           style={{
             position: 'absolute',
@@ -68,7 +72,7 @@ export const Contacts: React.FC<{
       {others.map((o, i) => (
         <div
           key={o.name}
-          style={{ position: 'absolute', top: ROW_TOP + (i + inP) * ROW_H, left: 10, right: 10, height: ROW_H - 8 }}
+          style={{ position: 'absolute', top: ROW_TOP + (i + room) * ROW_H, left: 10, right: 10, height: ROW_H - 8 }}
         >
           <Row person={o} muted>
             {o.trusted ? <Icon name="shieldCheck" size={26} color={C.primary} /> : null}
@@ -81,11 +85,33 @@ export const Contacts: React.FC<{
   );
 };
 
-const Row: React.FC<{ person: Person; muted?: boolean; children?: React.ReactNode }> = ({ person, muted, children }) => (
+const Row: React.FC<{ person: Person; muted?: boolean; signed?: boolean; children?: React.ReactNode }> = ({
+  person,
+  muted,
+  signed,
+  children,
+}) => (
   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', gap: 14, padding: '0 14px' }}>
     <Avatar initial={person.initial} size={52} tone={person.tone ?? NEUTRAL} />
-    <div style={{ flex: 1, minWidth: 0, fontSize: 21, fontWeight: 650, color: muted ? 'oklch(40% 0.008 265)' : C.ink }}>
-      {person.name}
+    <div style={{ flex: 1, minWidth: 0, lineHeight: 1.2 }}>
+      <div style={{ fontSize: 21, fontWeight: 650, color: muted ? 'oklch(40% 0.008 265)' : C.ink }}>{person.name}</div>
+      {signed ? (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 3,
+            marginTop: 3,
+            fontSize: 12.5,
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+            color: C.successInk,
+          }}
+        >
+          <Icon name="shieldCheck" size={13} color={C.success} />
+          signed
+        </div>
+      ) : null}
     </div>
     {children}
   </div>

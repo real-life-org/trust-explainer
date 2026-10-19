@@ -17,7 +17,10 @@ export const C = {
   gray5: 'oklch(32% 0.02 265)',
 
   // phone (simulator: dark shell, light screen)
-  shell: 'oklch(12% 0.01 265)',
+  shell: 'oklch(10% 0.005 265)',
+  rim: 'oklch(34% 0.012 265)',
+  rimHigh: 'oklch(62% 0.012 265)',
+  rimLow: 'oklch(22% 0.01 265)',
   screen: 'oklch(98% 0.003 265)',
   ink: 'oklch(22% 0.004 265)',
   muted: 'oklch(44% 0.008 265)',

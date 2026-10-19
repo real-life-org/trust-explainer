@@ -8,9 +8,14 @@ import { f, T } from '../timings';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
-/** Navy background with the hero's fading dot grid. */
+/** Navy background with a soft light behind the phones and the hero's fading dot grid. */
 export const Background: React.FC = () => (
   <AbsoluteFill style={{ background: C.bg }}>
+    <AbsoluteFill
+      style={{
+        background: `radial-gradient(ellipse 55% 60% at 50% 52%, oklch(26% 0.06 264 / 0.9), transparent 70%)`,
+      }}
+    />
     <AbsoluteFill
       style={{
         backgroundImage: `radial-gradient(${C.dot} 1.4px, transparent 1.4px)`,

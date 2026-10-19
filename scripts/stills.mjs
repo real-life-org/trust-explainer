@@ -12,7 +12,8 @@ const moments = [
   ['05-move-away-credential', 7.3],
   ['06-confirm-back-on-ana', 9.3],
   ['07-connected-credential', 10.4],
-  ['08-contacts', 12.4],
+  ['08-credential-to-row', 11.6],
+  ['08b-contacts', 12.4],
   ['09-trusted', 14.6],
   ['10-outro', 17.0],
 ];

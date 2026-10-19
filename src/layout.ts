@@ -1,14 +1,25 @@
 import { Easing, interpolate, useVideoConfig } from 'remotion';
 import { f, T } from './timings';
 
-/** Phone geometry in phone-local pixels (before scaling). */
-export const PHONE = { w: 360, h: 740, inset: 10, radius: 46 } as const;
-/** Screen = phone minus the shell inset. Screen-local coords are used by the screens. */
-export const SCREEN = { w: PHONE.w - 2 * PHONE.inset, h: PHONE.h - 2 * PHONE.inset } as const;
+/**
+ * Phone geometry in phone-local pixels (before scaling): a thin metal rim,
+ * a black bezel `inset` wide, and a status bar `status` high above the app
+ * content.
+ */
+export const PHONE = { w: 364, h: 648, inset: 12, status: 44, radius: 58 } as const;
+/**
+ * The app content area below the status bar. Screen-local coords, used by
+ * the screens, start at its top-left corner.
+ */
+export const SCREEN = { w: PHONE.w - 2 * PHONE.inset, h: PHONE.h - 2 * PHONE.inset - PHONE.status } as const;
+/** Where screen-local (0, 0) sits in phone-local pixels. */
+export const ORIGIN = { x: PHONE.inset, y: PHONE.inset + PHONE.status } as const;
 /** Ana's QR box and Ben's viewfinder share this centre (screen-local). */
-export const CODE = { cy: 290, box: 220, hole: 214 } as const;
-/** The tray at the bottom of each screen where a received credential docks. */
-export const TRAY = { slotCy: 650, slotW: 300, slotH: 64 } as const;
+export const CODE = { cy: 270, box: 220, hole: 214 } as const;
+/** Where a received credential waits at the bottom of the screen until the contact list takes it in. */
+export const DOCK = { cy: 524, w: 300, h: 64 } as const;
+/** The contact list rows (screen-local); the first row is the new contact. */
+export const ROWS = { top: 132, h: 84 } as const;
 
 export type Who = 'A' | 'B';
 export type Pt = { x: number; y: number };
@@ -30,20 +41,20 @@ export function useLayout(): Layout {
   if (square) {
     return {
       square,
-      s: 0.66,
-      home: { A: { x: 290, y: 585 }, B: { x: 790, y: 585 } },
-      meet: { x: 540, y: 565 },
-      captionY: 150,
+      s: 0.84,
+      home: { A: { x: 282, y: 562 }, B: { x: 798, y: 562 } },
+      meet: { x: 540, y: 566 },
+      captionY: 132,
       captionSize: 30,
       headerPad: 48,
     };
   }
   return {
     square,
-    s: 0.72,
-    home: { A: { x: 620, y: 570 }, B: { x: 1300, y: 570 } },
-    meet: { x: 960, y: 545 },
-    captionY: 118,
+    s: 0.88,
+    home: { A: { x: 700, y: 548 }, B: { x: 1220, y: 548 } },
+    meet: { x: 960, y: 552 },
+    captionY: 112,
     captionSize: 34,
     headerPad: 64,
   };
@@ -58,8 +69,8 @@ export const rotate = (v: Pt, deg: number): Pt => ({
 /** A screen-local point of a phone, in stage coordinates, for a given pose. */
 export function screenPointToStage(pose: Pose, L: Layout, p: Pt): Pt {
   const local = {
-    x: (p.x + PHONE.inset - PHONE.w / 2) * L.s,
-    y: (p.y + PHONE.inset - PHONE.h / 2) * L.s,
+    x: (p.x + ORIGIN.x - PHONE.w / 2) * L.s,
+    y: (p.y + ORIGIN.y - PHONE.h / 2) * L.s,
   };
   const r = rotate(local, pose.rot);
   return { x: pose.x + r.x, y: pose.y + r.y };
@@ -82,7 +93,7 @@ const progress = (frame: number, from: number, to: number, easing: (t: number) =
  * 90° relative turn and the code fits the camera exactly.
  */
 export function meetPose(who: Who, L: Layout): Pose {
-  const codeOff = { x: 0, y: (CODE.cy + PHONE.inset - PHONE.h / 2) * L.s };
+  const codeOff = { x: 0, y: (CODE.cy + ORIGIN.y - PHONE.h / 2) * L.s };
   const r = rotate(codeOff, TILT[who]);
   return { x: L.meet.x - r.x, y: L.meet.y - r.y, rot: TILT[who] };
 }

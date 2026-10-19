@@ -2,11 +2,12 @@
 
 A Remotion experiment that animates the in-person encounter of the Real Life
 Trust Protocol: Ana shows a code, Ben scans it phone over phone, both confirm,
-each signs an ed25519 encounter credential for the other, a new contact
-appears on both phones, and Ana marks Ben as trusted in a separate step.
+each signs an ed25519 encounter credential for the other, each credential
+jumps into the contact list and becomes the new contact on both phones, and
+Ana marks Ben as trusted in a separate step.
 
 The look follows the ceremony simulator (`trust-protocol/simulator/`: dark
-phone shell, light screen, the viewfinder cut through the scanning phone) and
+handset with status bar and dynamic island, light screen, the viewfinder cut through the scanning phone) and
 the site's encounter card (`trust-protocol/apps/site`: navy, blue accent,
 green signed credentials, fingerprint and shield icons).
 
@@ -57,16 +58,18 @@ constants in `src/layout.ts`.
 | Code recognized | 4.5 |
 | 3 Confirmation on Ben, tap | 4.8 to 6.4, tap 5.8 |
 | 4 Ben's phone moves away | 6.4 to 7.6 |
-| 8a Credential Ben → Ana flies and docks | 6.9 to 8.3 |
+| 8a Credential Ben → Ana flies and waits at the bottom | 6.9 to 8.3 |
 | 5 Counter-confirmation on Ana, tap | 7.8 to 11.0, tap 9.4 |
-| 8b Credential Ana → Ben flies and docks | 9.6 to 11.0 |
-| 6 New contact on both phones | 11.0, row slides in at 11.5 |
+| 8b Credential Ana → Ben flies and waits at the bottom | 9.6 to 11.0 |
+| 6 Contact list on both phones | from 11.0 |
+| Both credentials jump into the list and become the new row | 11.3 to 11.8 |
 | 7 Trust act on Ana | highlight 12.9, tap 13.9 |
 | Closing line | 15.6 to 18.0 |
 
 ## Layout
 
-- `src/layout.ts`: phone geometry, stage positions for both formats, the scan pose
+- `src/layout.ts`: phone geometry, credential dock, contact rows, stage
+  positions for both formats, the scan pose
 - `src/theme.ts`: colours (from the site tokens and the simulator), names, keys,
   and each person's colour (Ana orange, Ben violet), used on the owner chip in
   the top right of every screen, the label under the phone and the names on

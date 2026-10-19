@@ -45,8 +45,11 @@ export const T = {
   /** 8b. credential "Ana -> Ben" flies from Ana to Ben */
   credAnaToBen: { from: 9.6, to: 11.0 },
 
-  /** 6. contact list on both phones, the new row slides in at `newRow` */
-  contacts: { from: 11.0, to: DURATION_S, newRow: 11.5 },
+  /** 6. contact list on both phones; the waiting credentials jump into the list and become the new row at `newRow` */
+  contacts: { from: 11.0, to: DURATION_S, newRow: 11.8 },
+
+  /** both credentials leave their dock and jump to the new row's place */
+  credToRow: { from: 11.3, to: 11.8 },
 
   /** 7. trust act on Ana: the button is highlighted from `from`, tapped at `tap` */
   trust: { from: 12.9, tap: 13.9 },

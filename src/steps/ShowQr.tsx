@@ -46,13 +46,13 @@ export const ShowQr: React.FC<{ who: Who; tapScanAt?: number }> = ({ who, tapSca
       >
         <QrCode data={DATA[who]} size={190} />
       </div>
-      <At top={450}>
+      <At top={420}>
         <Btn kind="primary" scale={press} style={{ flex: 'none', width: 220 }}>
           <Icon name="scan" size={22} color="#fff" />
           Scan code
         </Btn>
       </At>
-      {tapScanAt !== undefined ? <Tap at={tapScanAt} x={SCREEN.w / 2 + 40} y={479} /> : null}
+      {tapScanAt !== undefined ? <Tap at={tapScanAt} x={SCREEN.w / 2 + 40} y={449} /> : null}
     </AbsoluteFill>
   );
 };
