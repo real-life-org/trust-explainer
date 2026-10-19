@@ -2,7 +2,6 @@ import React from 'react';
 import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { CredentialCard } from '../components/CredentialCard';
 import { Layout, phonePose, screenPointToStage, SCREEN, TRAY, Who } from '../layout';
-import { PEOPLE } from '../theme';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
@@ -37,7 +36,7 @@ export const CredentialFlight: React.FC<{ issuer: Who; holder: Who; start: numbe
 
   const appear = interpolate(frame, [0, 8], [0, 1], clamp);
   const settle = spring({ frame: frame - flight, fps, config: { damping: 12, stiffness: 160 } });
-  const scale = frame < flight ? interpolate(t, [0, 0.25, 1], [0.55, 1.08, 1]) : 1 + 0.05 * (1 - settle);
+  const scale = frame < flight ? interpolate(t, [0, 0.25, 0.8, 1], [0.6, 1.35, 1.3, 1]) : 1 + 0.05 * (1 - settle);
 
   return (
     <div
@@ -50,7 +49,7 @@ export const CredentialFlight: React.FC<{ issuer: Who; holder: Who; start: numbe
         zIndex: 200,
       }}
     >
-      <CredentialCard from={PEOPLE[issuer].name} to={PEOPLE[holder].name} />
+      <CredentialCard from={issuer} to={holder} />
     </div>
   );
 };

@@ -67,7 +67,10 @@ constants in `src/layout.ts`.
 ## Layout
 
 - `src/layout.ts`: phone geometry, stage positions for both formats, the scan pose
-- `src/theme.ts`: colours (from the site tokens and the simulator), names, keys
+- `src/theme.ts`: colours (from the site tokens and the simulator), names, keys,
+  and each person's colour (Ana orange, Ben violet), used on the owner chip in
+  the top right of every screen, the label under the phone and the names on
+  the credential cards
 - `src/components/`: phone, QR code (real, scannable), credential card, icons
 - `public/fonts/`: Ubuntu Sans and Ubuntu Sans Mono, bundled so renders match
 

@@ -8,7 +8,7 @@ export const SCREEN = { w: PHONE.w - 2 * PHONE.inset, h: PHONE.h - 2 * PHONE.ins
 /** Ana's QR box and Ben's viewfinder share this centre (screen-local). */
 export const CODE = { cy: 290, box: 220, hole: 214 } as const;
 /** The tray at the bottom of each screen where a received credential docks. */
-export const TRAY = { labelTop: 590, slotCy: 656, slotW: 300, slotH: 60 } as const;
+export const TRAY = { slotCy: 650, slotW: 300, slotH: 64 } as const;
 
 export type Who = 'A' | 'B';
 export type Pt = { x: number; y: number };
@@ -30,9 +30,9 @@ export function useLayout(): Layout {
   if (square) {
     return {
       square,
-      s: 0.8,
-      home: { A: { x: 285, y: 590 }, B: { x: 795, y: 590 } },
-      meet: { x: 540, y: 545 },
+      s: 0.66,
+      home: { A: { x: 290, y: 585 }, B: { x: 790, y: 585 } },
+      meet: { x: 540, y: 565 },
       captionY: 150,
       captionSize: 30,
       headerPad: 48,
@@ -40,9 +40,9 @@ export function useLayout(): Layout {
   }
   return {
     square,
-    s: 1,
-    home: { A: { x: 600, y: 575 }, B: { x: 1320, y: 575 } },
-    meet: { x: 960, y: 525 },
+    s: 0.72,
+    home: { A: { x: 620, y: 570 }, B: { x: 1300, y: 570 } },
+    meet: { x: 960, y: 545 },
     captionY: 118,
     captionSize: 34,
     headerPad: 64,

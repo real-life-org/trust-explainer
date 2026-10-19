@@ -1,14 +1,17 @@
 import React from 'react';
-import { C, FONT, MONO } from '../theme';
-import { CODE, Layout, PHONE, Pose, SCREEN, TRAY } from '../layout';
+import { C, FONT, PEOPLE } from '../theme';
+import { CODE, Layout, PHONE, Pose, SCREEN, TRAY, Who } from '../layout';
+import { Avatar } from './ui';
 
 /**
- * A phone in the simulator's look: dark shell, light screen, a small status
- * line, and a tray at the bottom where a received credential docks.
+ * A simplified phone in the simulator's look: dark shell, light screen, the
+ * owner's avatar and name in the top right corner on every screen, and an
+ * empty slot at the bottom where a received credential docks.
  * `hole` (0..1) cuts the viewfinder out of the whole phone, so the code on
  * the phone underneath shows through, as in the ceremony simulator.
  */
 export const Phone: React.FC<{
+  owner: Who;
   pose: Pose;
   L: Layout;
   opacity?: number;
@@ -16,7 +19,7 @@ export const Phone: React.FC<{
   hole?: number;
   zIndex?: number;
   children: React.ReactNode;
-}> = ({ pose, L, opacity = 1, lift = 0, hole = 0, zIndex, children }) => {
+}> = ({ owner, pose, L, opacity = 1, lift = 0, hole = 0, zIndex, children }) => {
   const size = CODE.hole * hole;
   const hx = PHONE.inset + SCREEN.w / 2 - size / 2;
   const hy = PHONE.inset + CODE.cy - size / 2;
@@ -73,67 +76,54 @@ export const Phone: React.FC<{
           fontFamily: FONT,
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            top: 12,
-            left: 22,
-            right: 22,
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontFamily: MONO,
-            fontSize: 11,
-            color: C.muted,
-          }}
-        >
-          <span>9:41</span>
-          <span>Web of Trust</span>
-          <span>offline ok</span>
-        </div>
-        {children}
         <Tray />
+        {children}
+        <OwnerChip who={owner} />
       </div>
     </div>
   );
 };
 
-/** "Held on this device" with an empty slot; the docked card covers the slot. */
+/** The empty slot a received credential docks onto; the card covers it. */
 const Tray: React.FC = () => (
-  <>
+  <div
+    style={{
+      position: 'absolute',
+      left: (SCREEN.w - TRAY.slotW) / 2,
+      top: TRAY.slotCy - TRAY.slotH / 2,
+      width: TRAY.slotW,
+      height: TRAY.slotH,
+      boxSizing: 'border-box',
+      borderRadius: 14,
+      border: `2px dashed oklch(86% 0.01 265)`,
+    }}
+  />
+);
+
+/** Whose phone this is: avatar and name, top right, always on top of the screen content. */
+const OwnerChip: React.FC<{ who: Who }> = ({ who }) => {
+  const p = PEOPLE[who];
+  return (
     <div
       style={{
         position: 'absolute',
-        top: TRAY.labelTop,
-        left: 0,
-        right: 0,
-        textAlign: 'center',
-        fontFamily: MONO,
-        fontSize: 10,
-        letterSpacing: '0.14em',
-        textTransform: 'uppercase',
-        color: C.faint,
-      }}
-    >
-      Held on this device
-    </div>
-    <div
-      style={{
-        position: 'absolute',
-        left: (SCREEN.w - TRAY.slotW) / 2,
-        top: TRAY.slotCy - TRAY.slotH / 2,
-        width: TRAY.slotW,
-        height: TRAY.slotH,
-        boxSizing: 'border-box',
-        borderRadius: 12,
-        border: `1.5px dashed oklch(84% 0.01 265)`,
+        top: 14,
+        right: 14,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: 12,
-        color: 'oklch(68% 0.008 265)',
+        gap: 9,
+        padding: '4px 14px 4px 4px',
+        borderRadius: 999,
+        background: 'oklch(100% 0 0)',
+        boxShadow: `0 0 0 2px ${p.tone.bg}`,
+        fontSize: 22,
+        fontWeight: 700,
+        color: p.tone.ink,
+        zIndex: 5,
       }}
     >
-      no credential yet
+      <Avatar initial={p.initial} size={40} tone={p.tone} />
+      {p.name}
     </div>
-  </>
-);
+  );
+};

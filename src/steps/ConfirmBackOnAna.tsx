@@ -1,7 +1,8 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
-import { C, PEOPLE } from '../theme';
-import { At, Avatar, Btn, Mono, Tap, usePress, useSequenceFade } from '../components/ui';
+import { PEOPLE } from '../theme';
+import { At, Avatar, Btn, Tap, usePress, useSequenceFade } from '../components/ui';
+import { CONFIRM_BTN } from './ConfirmOnBen';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
@@ -15,46 +16,33 @@ export const ConfirmBackOnAna: React.FC<{ tapAt: number }> = ({ tapAt }) => {
   const press = usePress(tapAt);
   const ask = interpolate(frame, [tapAt + 6, tapAt + 14], [1, 0], clamp);
   const done = interpolate(frame, [tapAt + 10, tapAt + 20], [0, 1], clamp);
-  const b = PEOPLE.B;
+  const { A: a, B: b } = PEOPLE;
   return (
     <AbsoluteFill style={{ opacity }}>
       <AbsoluteFill style={{ opacity: ask }}>
-        <At top={46}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: C.successInk }}>Ben verified you</div>
-          <div style={{ fontSize: 20, fontWeight: 700, marginTop: 6 }}>Verify Ben back?</div>
+        <At top={88} style={{ padding: '0 28px' }}>
+          <div style={{ fontSize: 25, fontWeight: 700, lineHeight: 1.2 }}>Verify {b.name} back?</div>
         </At>
-        <At top={126}>
-          <Avatar initial={b.initial} size={76} />
-          <div style={{ fontSize: 21, fontWeight: 600, marginTop: 10 }}>{b.name}</div>
-          <Mono size={11} style={{ marginTop: 6 }}>
-            {b.key}
-          </Mono>
+        <At top={186}>
+          <Avatar initial={b.initial} size={104} tone={b.tone} />
+          <div style={{ fontSize: 28, fontWeight: 700, marginTop: 14, color: b.tone.ink }}>{b.name}</div>
         </At>
-        <At top={290} style={{ padding: '0 34px' }}>
-          <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.45 }}>
-            Confirm if Ben is the person you just met.
-          </div>
-        </At>
-        <At top={372} style={{ flexDirection: 'row', gap: 12, padding: '0 24px' }}>
-          <Btn kind="ghost">Not now</Btn>
-          <Btn kind="confirm" scale={press}>
+        <At top={CONFIRM_BTN.top} style={{ padding: '0 28px', alignItems: 'stretch' }}>
+          <Btn kind="confirm" scale={press} style={{ flex: 'none' }}>
             Confirm
           </Btn>
         </At>
-        <Tap at={tapAt} x={235} y={395} />
+        <Tap at={tapAt} x={210} y={CONFIRM_BTN.top + CONFIRM_BTN.h / 2} />
       </AbsoluteFill>
       <AbsoluteFill style={{ opacity: done }}>
-        <At top={120}>
+        <At top={170}>
           <div style={{ display: 'flex' }}>
-            <Avatar initial="A" size={66} ring />
-            <div style={{ marginLeft: -14 }}>
-              <Avatar initial="B" size={66} tone="green" ring />
+            <Avatar initial={a.initial} size={96} tone={a.tone} ring />
+            <div style={{ marginLeft: -20 }}>
+              <Avatar initial={b.initial} size={96} tone={b.tone} ring />
             </div>
           </div>
-          <div style={{ fontSize: 21, fontWeight: 700, marginTop: 18 }}>You and Ben are connected</div>
-          <div style={{ fontSize: 13, color: C.muted, marginTop: 8, padding: '0 40px', lineHeight: 1.45 }}>
-            Each of you now holds a signed credential from the other.
-          </div>
+          <div style={{ fontSize: 26, fontWeight: 700, marginTop: 22 }}>Connected with {b.name}</div>
         </At>
       </AbsoluteFill>
     </AbsoluteFill>

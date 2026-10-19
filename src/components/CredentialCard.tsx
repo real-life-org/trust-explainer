@@ -1,10 +1,10 @@
 import React from 'react';
-import { C, FONT, MONO } from '../theme';
-import { TRAY } from '../layout';
+import { C, FONT, MONO, PEOPLE } from '../theme';
+import { TRAY, type Who } from '../layout';
 import { Icon } from './Icons';
 
 /** The site's encounter credential row (.tp-cred), in the light phone palette. */
-export const CredentialCard: React.FC<{ from: string; to: string }> = ({ from, to }) => (
+export const CredentialCard: React.FC<{ from: Who; to: Who }> = ({ from, to }) => (
   <div
     style={{
       width: TRAY.slotW,
@@ -21,17 +21,18 @@ export const CredentialCard: React.FC<{ from: string; to: string }> = ({ from, t
       boxShadow: '0 10px 24px -12px oklch(0% 0 0 / 0.45)',
     }}
   >
-    <Icon name="shieldCheck" size={22} color={C.success} />
+    <Icon name="shieldCheck" size={26} color={C.success} />
     <div style={{ flex: 1, minWidth: 0, lineHeight: 1.25 }}>
-      <div style={{ fontSize: 15, fontWeight: 700, color: C.ink }}>
-        {from} → {to}
+      <div style={{ fontSize: 19, fontWeight: 700, color: C.ink }}>
+        <span style={{ color: PEOPLE[from].tone.ink }}>{PEOPLE[from].name}</span> →{' '}
+        <span style={{ color: PEOPLE[to].tone.ink }}>{PEOPLE[to].name}</span>
       </div>
-      <div style={{ fontSize: 11.5, color: C.muted }}>encounter credential, signed</div>
+      <div style={{ fontSize: 14, color: C.muted }}>signed credential</div>
     </div>
     <div
       style={{
         fontFamily: MONO,
-        fontSize: 11,
+        fontSize: 14,
         color: C.successInk,
         padding: '3px 7px',
         borderRadius: 6,

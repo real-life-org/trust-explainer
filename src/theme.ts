@@ -41,7 +41,28 @@ export const C = {
 export const FONT = '"Ubuntu Sans", Ubuntu, Inter, system-ui, sans-serif';
 export const MONO = '"Ubuntu Sans Mono", "Ubuntu Mono", ui-monospace, monospace';
 
+/** A person's colour: `bg`/`ink` for avatars on the light screen, `stage` for text on navy. */
+export type Tone = { bg: string; ink: string; stage: string };
+
+/** Neutral tone for the other contacts in the list. */
+export const NEUTRAL: Tone = { bg: 'oklch(92% 0.008 265)', ink: 'oklch(42% 0.01 265)', stage: 'oklch(80% 0.01 265)' };
+
+/**
+ * Ana and Ben each have one colour, used on their avatar, the label under
+ * their phone and their name on the credential cards. Warm orange and violet
+ * stay clear of the blue accent and the green of signed credentials.
+ */
 export const PEOPLE = {
-  A: { name: 'Ana', initial: 'A', key: 'did:key:z6MkhaXg…9vQ2' },
-  B: { name: 'Ben', initial: 'B', key: 'did:key:z6MkrJVn…3kLp' },
+  A: {
+    name: 'Ana',
+    initial: 'A',
+    key: 'did:key:z6MkhaXg…9vQ2',
+    tone: { bg: 'oklch(91% 0.07 55)', ink: 'oklch(52% 0.15 50)', stage: 'oklch(79% 0.13 60)' } as Tone,
+  },
+  B: {
+    name: 'Ben',
+    initial: 'B',
+    key: 'did:key:z6MkrJVn…3kLp',
+    tone: { bg: 'oklch(91% 0.06 300)', ink: 'oklch(50% 0.18 300)', stage: 'oklch(76% 0.13 300)' } as Tone,
+  },
 } as const;

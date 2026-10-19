@@ -1,6 +1,6 @@
 import React from 'react';
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
-import { C, FONT, MONO } from '../theme';
+import { C, FONT, MONO, type Tone } from '../theme';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
@@ -52,10 +52,10 @@ export const Tap: React.FC<{ at: number; x: number; y: number }> = ({ at, x, y }
   );
 };
 
-export const Avatar: React.FC<{ initial: string; size: number; tone?: 'blue' | 'green'; ring?: boolean }> = ({
+export const Avatar: React.FC<{ initial: string; size: number; tone: Tone; ring?: boolean }> = ({
   initial,
   size,
-  tone = 'blue',
+  tone,
   ring,
 }) => (
   <div
@@ -63,15 +63,15 @@ export const Avatar: React.FC<{ initial: string; size: number; tone?: 'blue' | '
       width: size,
       height: size,
       borderRadius: '50%',
-      background: tone === 'blue' ? C.primaryTint : C.successTint,
-      color: tone === 'blue' ? C.primaryInk : C.successInk,
+      background: tone.bg,
+      color: tone.ink,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: size * 0.38,
+      fontSize: size * 0.42,
       fontWeight: 700,
       fontFamily: FONT,
-      border: ring ? `2px solid ${C.screen}` : undefined,
+      border: ring ? `3px solid ${C.screen}` : undefined,
       flexShrink: 0,
     }}
   >
@@ -87,15 +87,15 @@ export const Btn: React.FC<{
 }> = ({ kind, children, scale = 1, style }) => {
   const base: React.CSSProperties = {
     flex: 1,
-    height: 46,
-    borderRadius: 12,
+    height: 58,
+    borderRadius: 14,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
     fontFamily: FONT,
-    fontSize: 15,
-    fontWeight: 600,
+    fontSize: 19,
+    fontWeight: 650,
     transform: `scale(${scale})`,
   };
   const kinds: Record<string, React.CSSProperties> = {

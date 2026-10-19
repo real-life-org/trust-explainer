@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, Sequence, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import { loadFonts } from './fonts';
+import { PEOPLE } from './theme';
 import { f, T } from './timings';
 import { phonePose, useLayout } from './layout';
 import { Phone } from './components/Phone';
@@ -45,7 +46,7 @@ export const Encounter: React.FC = () => {
       <NameTag who="B" L={L} />
 
       {/* Ana */}
-      <Phone pose={phonePose('A', frame, L)} L={L} opacity={intro} lift={(1 - intro) * 40} zIndex={10}>
+      <Phone owner="A" pose={phonePose('A', frame, L)} L={L} opacity={intro} lift={(1 - intro) * 40} zIndex={10}>
         <Sequence name="1 Ana shows her code" {...span(T.qrOnAna)}>
           <ShowQr who="A" />
         </Sequence>
@@ -54,10 +55,10 @@ export const Encounter: React.FC = () => {
         </Sequence>
         <Sequence name="6+7 Ana contacts, trust act" {...span(T.contacts)}>
           <Contacts
-            peer={{ name: 'Ben', initial: 'B' }}
+            peer={PEOPLE.B}
             others={[
-              { name: 'Clara', initial: 'C', trusted: true, sub: 'met in person · March' },
-              { name: 'Dev', initial: 'D', trusted: false, sub: 'met in person · July' },
+              { name: 'Clara', initial: 'C', trusted: true },
+              { name: 'Dev', initial: 'D', trusted: false },
             ]}
             newRowAt={rel(T.contacts.newRow, T.contacts)}
             trust={{ highlightAt: rel(T.trust.from, T.contacts), tapAt: rel(T.trust.tap, T.contacts) }}
@@ -66,7 +67,7 @@ export const Encounter: React.FC = () => {
       </Phone>
 
       {/* Ben */}
-      <Phone pose={phonePose('B', frame, L)} L={L} opacity={introB} lift={(1 - introB) * 40} hole={hole} zIndex={20}>
+      <Phone owner="B" pose={phonePose('B', frame, L)} L={L} opacity={introB} lift={(1 - introB) * 40} hole={hole} zIndex={20}>
         <Sequence name="Ben shows his code" {...span(T.codeOnBen)}>
           <ShowQr who="B" tapScanAt={rel(T.codeOnBen.tap, T.codeOnBen)} />
         </Sequence>
@@ -78,10 +79,10 @@ export const Encounter: React.FC = () => {
         </Sequence>
         <Sequence name="6 Ben contacts" {...span(T.contacts)}>
           <Contacts
-            peer={{ name: 'Ana', initial: 'A' }}
+            peer={PEOPLE.A}
             others={[
-              { name: 'Eli', initial: 'E', trusted: true, sub: 'met in person · May' },
-              { name: 'Kai', initial: 'K', trusted: false, sub: 'met in person · June' },
+              { name: 'Eli', initial: 'E', trusted: true },
+              { name: 'Kai', initial: 'K', trusted: false },
             ]}
             newRowAt={rel(T.contacts.newRow, T.contacts)}
           />

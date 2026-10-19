@@ -3,6 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { C, FONT, MONO, PEOPLE } from '../theme';
 import { Layout, PHONE, Who } from '../layout';
 import { Icon } from '../components/Icons';
+import { Avatar } from '../components/ui';
 import { f, T } from '../timings';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
@@ -82,22 +83,26 @@ export const NameTag: React.FC<{ who: Who; L: Layout }> = ({ who, L }) => {
     clamp,
   );
   const intro = interpolate(frame, [6, 24], [0, 1], clamp);
+  const k = L.square ? 0.85 : 1;
   return (
     <div
       style={{
         position: 'absolute',
         left: home.x - 200,
         width: 400,
-        top: home.y + (PHONE.h / 2) * L.s + 22 * L.s,
-        textAlign: 'center',
+        top: home.y + (PHONE.h / 2) * L.s + 24,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         fontFamily: FONT,
         opacity: Math.min(away, intro),
       }}
     >
-      <div style={{ fontSize: 24 * (L.square ? 0.85 : 1), fontWeight: 700, color: C.white }}>{p.name}</div>
-      <div style={{ fontFamily: MONO, fontSize: 14 * (L.square ? 0.85 : 1), color: C.gray3, marginTop: 4 }}>
-        fresh anchor · {p.key}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Avatar initial={p.initial} size={36 * k} tone={p.tone} />
+        <span style={{ fontSize: 28 * k, fontWeight: 700, color: p.tone.stage }}>{p.name}</span>
       </div>
+      <div style={{ fontFamily: MONO, fontSize: 14 * k, color: C.gray3, marginTop: 6 }}>{p.key}</div>
     </div>
   );
 };

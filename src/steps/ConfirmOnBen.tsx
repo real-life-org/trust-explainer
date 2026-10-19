@@ -1,16 +1,17 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
-import { C } from '../theme';
-import { PEOPLE } from '../theme';
+import { C, PEOPLE } from '../theme';
 import { Icon } from '../components/Icons';
-import { At, Avatar, Btn, Mono, Tap, usePress, useSequenceFade } from '../components/ui';
+import { At, Avatar, Btn, Tap, usePress, useSequenceFade } from '../components/ui';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
+/** Where the Confirm button sits (screen-local), shared by the confirm screens and their taps. */
+export const CONFIRM_BTN = { top: 380, h: 58 } as const;
+
 /**
  * Step 3: the confirmation on Ben's phone. Ben confirms that Ana is the person
- * in front of him; the screen then says his credential goes to Ana.
- * `tapAt` is relative to this Sequence.
+ * in front of him; the result line follows. `tapAt` is relative to this Sequence.
  */
 export const ConfirmOnBen: React.FC<{ tapAt: number }> = ({ tapAt }) => {
   const frame = useCurrentFrame();
@@ -22,35 +23,26 @@ export const ConfirmOnBen: React.FC<{ tapAt: number }> = ({ tapAt }) => {
   return (
     <AbsoluteFill style={{ opacity }}>
       <AbsoluteFill style={{ opacity: ask }}>
-        <At top={48} style={{ padding: '0 30px' }}>
-          <div style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.25 }}>Is this the person in front of you?</div>
+        <At top={88} style={{ padding: '0 28px' }}>
+          <div style={{ fontSize: 25, fontWeight: 700, lineHeight: 1.2 }}>Is this the person in front of you?</div>
         </At>
-        <At top={126}>
-          <Avatar initial={a.initial} size={76} />
-          <div style={{ fontSize: 21, fontWeight: 600, marginTop: 10 }}>{a.name}</div>
-          <Mono size={11} style={{ marginTop: 6 }}>
-            {a.key}
-          </Mono>
+        <At top={186}>
+          <Avatar initial={a.initial} size={104} tone={a.tone} />
+          <div style={{ fontSize: 28, fontWeight: 700, marginTop: 14, color: a.tone.ink }}>{a.name}</div>
         </At>
-        <At top={290} style={{ padding: '0 34px' }}>
-          <div style={{ fontSize: 13, color: C.muted, lineHeight: 1.45 }}>
-            Confirm only if you are meeting them right now. No machine takes this step for you.
-          </div>
-        </At>
-        <At top={372} style={{ flexDirection: 'row', gap: 12, padding: '0 24px' }}>
-          <Btn kind="cancel">Cancel</Btn>
-          <Btn kind="confirm" scale={press}>
+        <At top={CONFIRM_BTN.top} style={{ padding: '0 28px', alignItems: 'stretch' }}>
+          <Btn kind="confirm" scale={press} style={{ flex: 'none' }}>
             Confirm
           </Btn>
         </At>
-        <Tap at={tapAt} x={235} y={395} />
+        <Tap at={tapAt} x={210} y={CONFIRM_BTN.top + CONFIRM_BTN.h / 2} />
       </AbsoluteFill>
       <AbsoluteFill style={{ opacity: done }}>
-        <At top={120}>
+        <At top={170}>
           <div
             style={{
-              width: 76,
-              height: 76,
+              width: 104,
+              height: 104,
               borderRadius: '50%',
               background: C.successTint,
               display: 'flex',
@@ -59,12 +51,9 @@ export const ConfirmOnBen: React.FC<{ tapAt: number }> = ({ tapAt }) => {
               transform: `scale(${interpolate(done, [0, 1], [0.85, 1])})`,
             }}
           >
-            <Icon name="shieldCheck" size={38} color={C.successInk} />
+            <Icon name="shieldCheck" size={52} color={C.successInk} />
           </div>
-          <div style={{ fontSize: 21, fontWeight: 700, marginTop: 18 }}>You verified Ana</div>
-          <div style={{ fontSize: 13, color: C.muted, marginTop: 8, padding: '0 40px', lineHeight: 1.45 }}>
-            Your signed credential goes to her. Hers about you comes back.
-          </div>
+          <div style={{ fontSize: 26, fontWeight: 700, marginTop: 22 }}>You verified {a.name}</div>
         </At>
       </AbsoluteFill>
     </AbsoluteFill>
