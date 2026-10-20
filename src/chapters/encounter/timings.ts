@@ -45,6 +45,9 @@ export const T = {
   /** 3. credential "Ana -> Ben" flies from Ana to Ben and waits at the bottom of his screen */
   credAnaToBen: { from: 13.2, to: 14.6 },
 
+  /** 3. once Ana's credential has landed, Ben's phone shows "connected" too */
+  connectedOnBen: 14.7,
+
   /** 4. contact list on both phones */
   contacts: { from: 15.7, to: DURATION_S },
 

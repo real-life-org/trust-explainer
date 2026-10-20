@@ -5,9 +5,10 @@ import { PEOPLE } from '../../../kit/cast';
 import { At, Avatar, Btn, Tap, usePress, useSequenceFade } from '../../../kit/ui';
 import { clamp } from '../../../kit/time';
 import { CONFIRM_BTN } from './ConfirmOnBen';
+import { Connected } from './Connected';
 
 /**
- * Step 5: the counter-confirmation on Ana's phone, then "connected".
+ * Step 3: the counter-confirmation on Ana's phone, then "connected".
  * `tapAt` is relative to this Sequence.
  */
 export const ConfirmBackOnAna: React.FC<{ tapAt: number }> = ({ tapAt }) => {
@@ -16,7 +17,7 @@ export const ConfirmBackOnAna: React.FC<{ tapAt: number }> = ({ tapAt }) => {
   const press = usePress(tapAt);
   const ask = interpolate(frame, [tapAt + 6, tapAt + 14], [1, 0], clamp);
   const done = interpolate(frame, [tapAt + 10, tapAt + 20], [0, 1], clamp);
-  const { A: a, B: b } = PEOPLE;
+  const b = PEOPLE.B;
   return (
     <AbsoluteFill style={{ opacity }}>
       <AbsoluteFill style={{ opacity: ask }}>
@@ -35,15 +36,7 @@ export const ConfirmBackOnAna: React.FC<{ tapAt: number }> = ({ tapAt }) => {
         <Tap at={tapAt} x={210} y={CONFIRM_BTN.top + CONFIRM_BTN.h / 2} />
       </AbsoluteFill>
       <AbsoluteFill style={{ opacity: done }}>
-        <At top={170}>
-          <div style={{ display: 'flex' }}>
-            <Avatar initial={a.initial} size={96} tone={a.tone} ring />
-            <div style={{ marginLeft: -20 }}>
-              <Avatar initial={b.initial} size={96} tone={b.tone} ring />
-            </div>
-          </div>
-          <div style={{ fontSize: 26, fontWeight: 700, marginTop: 22 }}>Connected with {b.name}</div>
-        </At>
+        <Connected self="A" peer="B" />
       </AbsoluteFill>
     </AbsoluteFill>
   );

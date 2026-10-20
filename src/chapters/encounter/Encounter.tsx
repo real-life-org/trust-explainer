@@ -87,7 +87,10 @@ export const Encounter: React.FC = () => {
           <ScanCode recognizedAt={rel(T.recognized, T.scannerOnBen)} />
         </Sequence>
         <Sequence name="2 Ben confirms" {...span(T.confirmOnBen)}>
-          <ConfirmOnBen tapAt={rel(T.confirmOnBen.tap, T.confirmOnBen)} />
+          <ConfirmOnBen
+            tapAt={rel(T.confirmOnBen.tap, T.confirmOnBen)}
+            connectedAt={rel(T.connectedOnBen, T.confirmOnBen)}
+          />
         </Sequence>
         <Sequence name="4 Ben contacts" {...span(T.contacts)}>
           <Contacts

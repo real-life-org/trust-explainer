@@ -130,7 +130,7 @@ format.
 | Start | 0.3 to 1.6 | 1.2 | both phones show their code |
 | 1 Scan | 1.6 to 8.0 | 7.7 | code recognized, phones home, confirmation on Ben's phone |
 | 2 First confirmation | 8.0 to 11.8 | 11.4 | Ben's credential docked on Ana's phone, confirmation on Ana's phone |
-| 3 Second confirmation | 11.8 to 15.7 | 15.3 | Ana's credential docked on Ben's phone |
+| 3 Second confirmation | 11.8 to 15.7 | 15.3 | Ana's credential docked on Ben's phone, both phones show "Connected" |
 | 4 Contacts | 15.7 to 18.7 | 17.7 | both credentials became the new contact, Ana's first, then Ben's |
 
 Names and keys are illustration, as on the site.
