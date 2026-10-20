@@ -1,7 +1,7 @@
 # Trust protocol explainer
 
 The shared base for explaining the Real Life Trust Protocol: one set of
-building blocks and one chapter model, drawn as an interactive deck in the
+building blocks and one chapter model, drawn as interactive slides in the
 browser, rendered as video, and later as animated graphics for the website.
 Every output draws the same React components from the same timeline, so
 they cannot drift apart.
@@ -21,7 +21,7 @@ fingerprint and shield icons).
 
 ```sh
 npm install
-npm run dev             # overview at /, preview at /frame.html?scrub
+npm run dev             # slides at /, video.html, animations.html, frame.html?scrub
 npm run build           # static site in out/web/, works from any subpath
 npm run render          # out/encounter.mp4 (1920x1080)
 npm run render:square   # out/encounter-square.mp4 (1080x1080)
@@ -34,38 +34,38 @@ Video and stills need ffmpeg and a Chromium: `--browser=/path`, or
 The site is published with GitHub Pages from `main`
 (`.github/workflows/pages.yml`).
 
-## Overview
+## Pages
 
-`index.html` has three sections:
+Three pages share one top bar:
 
-- **Slides**: one preview per beat, by chapter. Click a slide, or
-  Present, to start the presentation there (fullscreen where the browser
-  allows it).
-- **Video**: the whole film, every chapter back to back, drawn live, with
-  a timeline (chapters as segments, a tick at every hold), fullscreen and a
-  16:9/square switch.
-- **Animations**: looping clips for websites, each with its embed code.
+- **Slides** (`index.html`): every slide in a strip on the left, the
+  current one large on the right, as in a presentation program. One slide
+  is one beat.
+- **Video** (`video.html`): the whole film, every chapter back to back,
+  drawn live, with a timeline (chapters as segments, a tick at every hold),
+  fullscreen and a 16:9/square switch.
+- **Animations** (`animations.html`): looping clips for websites, each
+  with its embed code.
 
-## Presentation
+## Slides and presenting
 
-Each step plays the chapter up to the next beat's hold and stops there
-exactly; next while a step still plays finishes it at once. A chapter opens
-at its first beat (the start state); at the end of a chapter, next plays
-the following chapter in. The clock runs at display rate, so motion is as
-smooth as the screen allows.
+Next plays the chapter up to the next beat's hold and stops there exactly;
+next while a step still plays finishes it at once. Back, and a click in
+the strip, jump to a slide without playing. At the end of a chapter, next
+plays the following chapter in. Present shows the same stage in
+fullscreen, starting at the current slide; Esc returns to the strip on the
+same slide. The clock runs at display rate.
 
 | Key | Action |
 |---|---|
-| → ↓ Space Enter PageDown, click | next step |
-| ← ↑ Backspace PageUp, shift-click | previous step |
-| Home / End | start / end of the deck |
-| F | fullscreen |
-| H | hide the progress line |
-| Esc | back to the overview |
+| → ↓ Space PageDown, click on the slide | next step |
+| ← ↑ Backspace PageUp, shift-click | previous slide |
+| Home / End | first / last slide |
+| P, F5, F | present (again: leave) |
+| Esc | leave the presentation |
 
-The position is kept in the URL (`#present/encounter/2`: chapter and beat,
-0 is the start state), so a reload or a shared link opens the same step.
-`?format=square` shows the square format.
+The current slide is kept in the URL (`#encounter/2`: chapter and beat, 0
+is the start state), so a reload or a shared link opens the same slide.
 
 ## Animations for websites
 
@@ -73,7 +73,7 @@ A clip (`web/clips.ts`) is a stretch of one chapter in one format, with or
 without header and captions. `embed.html?clip=<id>` plays it in a loop,
 filling its frame, with a short fade where the loop starts over. It pauses
 while out of view and shows its last frame to visitors who prefer reduced
-motion. Embed it with an iframe; the overview copies the code:
+motion. Embed it with an iframe; the Animations page copies the code:
 
 ```html
 <iframe src="https://<site>/embed.html?clip=scan" title="Phone over phone"
@@ -99,7 +99,7 @@ gives the same picture, and frames may be fractional.
 - `src/kit/motion.ts`: `interpolate`, `interpolateColors`, `Easing.bezier`,
   `spring`
 
-The deck drives the frame from its own clock. The video export
+The slides, the video page and the clips drive the frame from their own clock. The video export
 (`scripts/render.mjs`) opens `web/frame.html` in headless Chromium through
 playwright-core, sets each frame through `window.__frame.set(n)`, takes a
 screenshot and pipes it into ffmpeg.
@@ -125,10 +125,12 @@ src/
     index.ts           all chapters in telling order
     encounter/         chapter "One encounter"
 web/
-  index.html, main.tsx       the overview, with the presentation on top
-  Overview.tsx, ui.tsx       slides, video player, animations
-  Deck.tsx, stops.ts         the presentation mode
+  Page.tsx, ui.tsx           page frame with the top bar, small UI pieces
+  index.html, SlidesPage.tsx the slides: strip, stage, presenting
+  stops.ts                   where each slide holds
+  video.html, VideoPage.tsx  the film player
   film.ts                    all chapters as one film
+  animations.html, AnimationsPage.tsx  the graphics for websites
   clips.ts, ClipPlayer.tsx   looping clips for websites
   embed.html, embed.tsx      one clip, for an iframe
   frame.html, frame.tsx      one chapter at one frame: export and preview
@@ -145,7 +147,7 @@ public/fonts/          Ubuntu Sans and Ubuntu Sans Mono, bundled so renders matc
 A chapter (`src/kit/chapter.ts`) is a scene plus a list of beats. Each beat
 has a caption, a start time and a hold: the moment the step's result is
 complete and the scene is at rest. The caption runs until the next beat
-starts. The deck stops at each hold; `beatSpans` throws if a hold lies
+starts. The slides stop at each hold; `beatSpans` throws if a hold lies
 outside its beat or where its caption is already fading. Beats are numbered
 in order; a `quiet` beat (opening or closing line) is unnumbered.
 

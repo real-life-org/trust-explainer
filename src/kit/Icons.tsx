@@ -26,6 +26,8 @@ const paths = {
   pause: ['M7 4h3v16H7z', 'M14 4h3v16h-3z'],
   maximize: ['M8 3H5a2 2 0 0 0-2 2v3', 'M21 8V5a2 2 0 0 0-2-2h-3', 'M3 16v3a2 2 0 0 0 2 2h3', 'M16 21h3a2 2 0 0 0 2-2v-3'],
   code: ['m16 18 6-6-6-6', 'm8 6-6 6 6 6'],
+  chevronLeft: ['m15 18-6-6 6-6'],
+  chevronRight: ['m9 18 6-6-6-6'],
 } as const;
 
 export type IconName = keyof typeof paths;
