@@ -1,5 +1,6 @@
 import React from 'react';
-import { AbsoluteFill, interpolate } from 'remotion';
+import { AbsoluteFill } from '../../../kit/timeline';
+import { interpolate } from '../../../kit/motion';
 import { C } from '../../../kit/theme';
 import { SCREEN } from '../../../kit/geometry';
 import type { Who } from '../../../kit/cast';

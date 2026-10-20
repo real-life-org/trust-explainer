@@ -1,4 +1,4 @@
-import { Easing, interpolate } from 'remotion';
+import { Easing, interpolate } from '../../kit/motion';
 import { useFormat, type Format } from '../../kit/format';
 import { ORIGIN, PHONE, type Pose, type Pt, rotate } from '../../kit/geometry';
 import type { Who } from '../../kit/cast';

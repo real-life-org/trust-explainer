@@ -1,5 +1,6 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, interpolateColors, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from '../../../kit/timeline';
+import { interpolate, interpolateColors } from '../../../kit/motion';
 import { C } from '../../../kit/theme';
 import { SCREEN } from '../../../kit/geometry';
 import { CODE } from '../layout';

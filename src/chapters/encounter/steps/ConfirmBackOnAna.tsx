@@ -1,5 +1,6 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from '../../../kit/timeline';
+import { interpolate } from '../../../kit/motion';
 import { PEOPLE } from '../../../kit/cast';
 import { At, Avatar, Btn, Tap, usePress, useSequenceFade } from '../../../kit/ui';
 import { clamp } from '../../../kit/time';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from '../../../kit/timeline';
+import { interpolate } from '../../../kit/motion';
 import { C } from '../../../kit/theme';
 import { PEOPLE } from '../../../kit/cast';
 import { Icon } from '../../../kit/Icons';

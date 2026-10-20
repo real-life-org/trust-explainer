@@ -1,5 +1,6 @@
 import React from 'react';
-import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { useCurrentFrame, useVideoConfig } from '../../../kit/timeline';
+import { Easing, interpolate, spring } from '../../../kit/motion';
 import { CredentialCard } from '../../../kit/CredentialCard';
 import { quad, screenPointToStage, SCREEN } from '../../../kit/geometry';
 import type { Who } from '../../../kit/cast';

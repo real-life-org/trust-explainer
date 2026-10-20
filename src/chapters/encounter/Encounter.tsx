@@ -1,5 +1,6 @@
 import React from 'react';
-import { interpolate, Sequence, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { Sequence, useCurrentFrame, useVideoConfig } from '../../kit/timeline';
+import { interpolate, spring } from '../../kit/motion';
 import { PEOPLE } from '../../kit/cast';
 import { SCREEN } from '../../kit/geometry';
 import { Phone } from '../../kit/Phone';

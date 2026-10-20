@@ -1,5 +1,6 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, useCurrentFrame } from './timeline';
+import { interpolate } from './motion';
 import { C, FONT, MONO } from './theme';
 import { PEOPLE, type Who } from './cast';
 import type { Format } from './format';

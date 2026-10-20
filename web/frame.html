@@ -3,12 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Real Life Trust Protocol</title>
-    <script>
-      // staticFile() in the scenes resolves against this base, so the deck
-      // also works when served from a subpath.
-      window.remotion_staticBase = location.pathname.replace(/\/[^/]*$/, '');
-    </script>
+    <title>Frame</title>
     <style>
       html, body, #root { margin: 0; height: 100%; }
       body { background: oklch(18% 0.03 265); overflow: hidden; }
@@ -16,6 +11,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./main.tsx"></script>
+    <script type="module" src="./frame.tsx"></script>
   </body>
 </html>

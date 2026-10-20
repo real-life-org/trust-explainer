@@ -1,29 +1,26 @@
-import { continueRender, delayRender, staticFile } from 'remotion';
-
 /**
- * Ubuntu Sans (and its mono), bundled under public/fonts so renders do not
- * depend on fonts installed on the machine.
+ * Ubuntu Sans (and its mono), bundled under public/fonts so every page and
+ * every rendered frame uses the same fonts, whatever is installed. The URLs
+ * are relative to the page, so pages work from any path.
  */
 const faces: Array<[string, string]> = [
   ['Ubuntu Sans', 'fonts/UbuntuSans.ttf'],
   ['Ubuntu Sans Mono', 'fonts/UbuntuSansMono.ttf'],
 ];
 
-let started = false;
+let ready: Promise<void> | null = null;
 
-export function loadFonts(): void {
-  if (started || typeof document === 'undefined') return;
-  started = true;
-  const handle = delayRender('Loading Ubuntu Sans');
-  Promise.all(
-    faces.map(([family, file]) => {
-      const face = new FontFace(family, `url(${staticFile(file)})`, { weight: '100 800' });
-      return face.load().then((loaded) => document.fonts.add(loaded));
+/** Loads the fonts once; resolves when they can be used. */
+export function loadFonts(): Promise<void> {
+  if (ready) return ready;
+  if (typeof document === 'undefined') return (ready = Promise.resolve());
+  ready = Promise.all(
+    faces.map(async ([family, file]) => {
+      const face = new FontFace(family, `url(${new URL(file, document.baseURI).href})`, { weight: '100 800' });
+      document.fonts.add(await face.load());
     }),
   )
-    .then(() => continueRender(handle))
-    .catch((err) => {
-      console.error('font load failed', err);
-      continueRender(handle);
-    });
+    .then(() => undefined)
+    .catch((err) => console.error('font load failed', err));
+  return ready;
 }

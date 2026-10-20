@@ -1,5 +1,6 @@
 import React from 'react';
-import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { useCurrentFrame, useVideoConfig } from './timeline';
+import { interpolate, spring } from './motion';
 import { C, FONT, MONO, type Tone } from './theme';
 import { clamp } from './time';
 
@@ -41,6 +42,7 @@ export const Tap: React.FC<{ at: number; x: number; y: number }> = ({ at, x, y }
         height: 44,
         borderRadius: '50%',
         background: 'oklch(30% 0.02 265 / 0.22)',
+        boxSizing: 'border-box',
         border: '2px solid oklch(100% 0 0 / 0.85)',
         boxShadow: '0 2px 8px oklch(0% 0 0 / 0.18)',
         opacity,
@@ -70,6 +72,7 @@ export const Avatar: React.FC<{ initial: string; size: number; tone: Tone; ring?
       fontSize: size * 0.42,
       fontWeight: 700,
       fontFamily: FONT,
+      boxSizing: 'border-box',
       border: ring ? `3px solid ${C.screen}` : undefined,
       flexShrink: 0,
     }}
@@ -87,6 +90,7 @@ export const Btn: React.FC<{
   const base: React.CSSProperties = {
     flex: 1,
     height: 58,
+    boxSizing: 'border-box',
     borderRadius: 14,
     display: 'flex',
     alignItems: 'center',

@@ -1,4 +1,4 @@
-import { useVideoConfig } from 'remotion';
+import { useVideoConfig } from './timeline';
 
 /**
  * The output formats every chapter is rendered in. A chapter's composition
