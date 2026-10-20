@@ -8,10 +8,13 @@
     "render": "remotion render src/index.ts Encounter out/encounter.mp4",
     "render:square": "remotion render src/index.ts EncounterSquare out/encounter-square.mp4",
     "stills": "node scripts/stills.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deck": "vite --config deck/vite.config.ts",
+    "deck:build": "vite build --config deck/vite.config.ts"
   },
   "dependencies": {
     "@remotion/cli": "4.0.536",
+    "@remotion/player": "4.0.536",
     "qrcode-generator": "2.0.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",
@@ -19,6 +22,8 @@
   },
   "devDependencies": {
     "@types/react": "19.3.0",
-    "typescript": "5.9.3"
+    "@types/react-dom": "19.3.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.1"
   }
 }

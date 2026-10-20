@@ -4,10 +4,13 @@ import { C, FONT } from './theme';
 import type { Format } from './format';
 import { useSequenceFade } from './ui';
 
+/** Frames a caption takes to fade in, and to fade out at the end of its beat. */
+export const CAPTION_FADE = 8;
+
 /** One caption line at the top of the stage, for the length of its Sequence. */
 export const Caption: React.FC<{ step?: number; text: string; F: Format; quiet?: boolean }> = ({ step, text, F, quiet }) => {
   const frame = useCurrentFrame();
-  const opacity = useSequenceFade(8, 8);
+  const opacity = useSequenceFade(CAPTION_FADE, CAPTION_FADE);
   const rise = interpolate(frame, [0, 10], [8, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>

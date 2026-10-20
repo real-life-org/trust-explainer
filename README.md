@@ -42,11 +42,40 @@ npm run render -- --browser-executable=/path/to/chrome
 node scripts/stills.mjs --browser-executable=/path/to/chrome
 ```
 
+## Deck
+
+The same chapters as a click-through presentation in the browser:
+
+```sh
+npm run deck          # dev server, prints the local URL
+npm run deck:build    # static site in out/deck/, works from any subpath
+```
+
+Each step plays the chapter up to the end of the next beat and holds there,
+with the caption fully visible. Pressing next while a step still plays
+finishes it at once. At the end of a chapter, next continues with the
+following chapter.
+
+| Key | Action |
+|---|---|
+| → ↓ Space Enter PageDown, click | next step |
+| ← ↑ Backspace PageUp, shift-click | previous step |
+| Home / End | start / end of the deck |
+| F | fullscreen |
+| H | hide the progress line |
+
+The position is kept in the URL (`#encounter/3`: chapter and steps
+reached), so a reload or a shared link opens the same step.
+`?format=square` shows the square format.
+
+Code: `deck/` (`Deck.tsx` drives a bare `@remotion/player`, `stops.ts`
+computes where each chapter holds).
+
 ## Structure
 
 The project is the shared base for an explainer of the trust protocol: one
-set of building blocks and one chapter model, rendered as video now, and
-later as an interactive deck and as animated graphics for the website.
+set of building blocks and one chapter model, rendered as video and as an
+interactive deck, and later as animated graphics for the website.
 
 ```text
 src/
@@ -63,7 +92,8 @@ src/
   chapters/
     index.ts           all chapters in telling order
     encounter/         chapter "One encounter"
-  Root.tsx             one composition per chapter and format
+  Root.tsx             one composition per chapter and format (video)
+deck/                  the chapters as a click-through deck in the browser
 public/fonts/          Ubuntu Sans and Ubuntu Sans Mono, bundled so renders match
 ```
 
