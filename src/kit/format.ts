@@ -9,18 +9,17 @@ export const FORMATS = [
   { suffix: 'Square', width: 1080, height: 1080 },
 ] as const;
 
-/** Stage metrics shared by all chapters: header, caption line. */
+/** Stage metrics shared by all chapters: the caption line. */
 export type Format = {
   square: boolean;
   captionY: number;
   captionSize: number;
-  headerPad: number;
 };
 
 export function useFormat(): Format {
   const { width, height } = useVideoConfig();
   const square = width === height;
   return square
-    ? { square, captionY: 132, captionSize: 30, headerPad: 48 }
-    : { square, captionY: 112, captionSize: 34, headerPad: 64 };
+    ? { square, captionY: 132, captionSize: 30 }
+    : { square, captionY: 112, captionSize: 34 };
 }

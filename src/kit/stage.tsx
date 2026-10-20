@@ -5,7 +5,6 @@ import { C, FONT, MONO } from './theme';
 import { PEOPLE, type Who } from './cast';
 import type { Format } from './format';
 import { PHONE, type Pt } from './geometry';
-import { Icon } from './Icons';
 import { Avatar } from './ui';
 import { clamp } from './time';
 
@@ -28,54 +27,6 @@ export const Background: React.FC = () => (
     />
   </AbsoluteFill>
 );
-
-/** Kicker in the top-left corner, "local first" in the top-right, like the site's encounter card. */
-export const Header: React.FC<{ kicker: string; F: Format }> = ({ kicker, F }) => {
-  const frame = useCurrentFrame();
-  const o = interpolate(frame, [0, 15], [0, 1], clamp);
-  const k = F.square ? 0.85 : 1;
-  return (
-    <AbsoluteFill style={{ opacity: o, fontFamily: FONT }}>
-      <div style={{ position: 'absolute', top: F.headerPad - 8, left: F.headerPad, display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div
-          style={{
-            width: 44 * k,
-            height: 44 * k,
-            borderRadius: 10,
-            background: C.tint,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Icon name="fingerprint" size={24 * k} color={C.accent} />
-        </div>
-        <div>
-          <div style={{ fontSize: 15 * k, fontWeight: 650, letterSpacing: '0.08em', textTransform: 'uppercase', color: C.gray3 }}>
-            {kicker}
-          </div>
-          <div style={{ fontSize: 15 * k, color: C.gray4, marginTop: 2 }}>Real Life Trust Protocol</div>
-        </div>
-      </div>
-      <div
-        style={{
-          position: 'absolute',
-          top: F.headerPad + 4,
-          right: F.headerPad,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 9,
-          fontSize: 16 * k,
-          fontWeight: 600,
-          color: C.accent,
-        }}
-      >
-        <span style={{ width: 9, height: 9, borderRadius: '50%', background: C.accent }} />
-        local first
-      </div>
-    </AbsoluteFill>
-  );
-};
 
 /**
  * Name and key under a phone whose home centre is `at` and scale `s`.

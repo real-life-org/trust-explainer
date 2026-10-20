@@ -38,7 +38,6 @@ export const ClipPlayer: React.FC<{ clip: Clip }> = ({ clip }) => {
         frame={frame}
         fit
         opacity={Math.max(0, opacity)}
-        header={clip.header}
         captions={clip.captions}
       />
     </div>

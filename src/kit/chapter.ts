@@ -31,7 +31,7 @@ export type Chapter = {
   id: string;
   /** composition name, e.g. "Encounter" -> "Encounter", "EncounterSquare" */
   composition: string;
-  /** the small line in the header, e.g. "One encounter" */
+  /** the chapter's short name, e.g. "One encounter", shown with its slides and in the player */
   kicker: string;
   durationS: number;
   beats: Beat[];

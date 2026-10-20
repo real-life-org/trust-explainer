@@ -1,9 +1,11 @@
 {
-  "name": "encounter-animation",
+  "name": "trust-explainer",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "description": "Explainer for the Real Life Trust Protocol: chapters rendered as deck, video and web graphics",
+  "license": "MIT",
+  "repository": "github:real-life-org/trust-explainer",
   "scripts": {
     "dev": "vite --config web/vite.config.ts",
     "build": "vite build --config web/vite.config.ts",

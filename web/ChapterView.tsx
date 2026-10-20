@@ -13,7 +13,7 @@ export type StageSize = { width: number; height: number };
  */
 export const ChapterView: React.FC<
   { chapter: Chapter; size: StageSize; frame: number; fit?: boolean; opacity?: number } & StageOptions
-> = ({ chapter, size, frame, fit, opacity = 1, header, captions }) => {
+> = ({ chapter, size, frame, fit, opacity = 1, captions }) => {
   const box = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   useLayoutEffect(() => {
@@ -41,7 +41,7 @@ export const ChapterView: React.FC<
         }}
       >
         <Timeline frame={frame} fps={FPS} width={size.width} height={size.height} durationInFrames={f(chapter.durationS)}>
-          <ChapterStage chapter={chapter} header={header} captions={captions} />
+          <ChapterStage chapter={chapter} captions={captions} />
         </Timeline>
       </div>
     </div>

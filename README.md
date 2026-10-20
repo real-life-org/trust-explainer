@@ -1,4 +1,4 @@
-# Trust protocol explainer
+# trust-explainer
 
 The shared base for explaining the Real Life Trust Protocol: one set of
 building blocks and one chapter model, drawn as interactive slides in the
@@ -11,11 +11,14 @@ a code, Ben scans Ana's phone over phone, both confirm, each signs an
 ed25519 encounter credential for the other, and each credential jumps into
 the contact list and becomes the new contact.
 
-The look follows the ceremony simulator (`trust-protocol/simulator/`: dark
-handset with status bar and dynamic island, light screen, the viewfinder cut
-through the scanning phone) and the site's encounter card
-(`trust-protocol/apps/site`: navy, blue accent, green signed credentials,
+The look follows the ceremony simulator in
+[trust-protocol](https://github.com/real-life-org/trust-protocol)
+(`simulator/`: dark handset with status bar and dynamic island, light
+screen, the viewfinder cut through the scanning phone) and the site's
+encounter card (`apps/site`: navy, blue accent, green signed credentials,
 fingerprint and shield icons).
+
+Live: <https://real-life-org.github.io/trust-explainer/>
 
 ## Use
 
@@ -70,7 +73,7 @@ is the start state), so a reload or a shared link opens the same slide.
 ## Animations for websites
 
 A clip (`web/clips.ts`) is a stretch of one chapter in one format, with or
-without header and captions. `embed.html?clip=<id>` plays it in a loop,
+without captions. `embed.html?clip=<id>` plays it in a loop,
 filling its frame, with a short fade where the loop starts over. It pauses
 while out of view and shows its last frame to visitors who prefer reduced
 motion. Embed it with an iframe; the Animations page copies the code:
@@ -117,8 +120,8 @@ src/
     format.ts          output formats (16:9, square) and stage metrics
     time.ts            fps, seconds -> frames
     chapter.ts         the chapter model: beats with captions and holds
-    ChapterStage.tsx   the frame around every chapter: stage, header, captions
-    stage.tsx          background, header, name tag
+    ChapterStage.tsx   the frame around every chapter: stage, scene, captions
+    stage.tsx          background, name tag
     fonts.ts           loads the bundled fonts
     Phone.tsx, CredentialCard.tsx, QrCode.tsx, Icons.tsx, ui.tsx
   chapters/
@@ -173,3 +176,9 @@ format.
 | 4 Contacts | 15.7 to 18.7 | 17.7 | both credentials became the new contact, Ana's first, then Ben's |
 
 Names and keys are illustration, as on the site.
+
+## Licence
+
+Code: [MIT](LICENSE). The bundled fonts Ubuntu Sans and Ubuntu Sans Mono
+are © Canonical Ltd. under the Ubuntu Font Licence 1.0
+([public/fonts/LICENCE.txt](public/fonts/LICENCE.txt)).

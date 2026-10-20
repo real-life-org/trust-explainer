@@ -5,7 +5,7 @@ import { f } from '../src/kit/time';
 
 /**
  * An animated graphic for websites: a stretch of one chapter, looped, in
- * one format, with or without the header and captions. Clips are cut from
+ * one format, with or without captions. Clips are cut from
  * the chapters, so they always match the deck and the video.
  */
 export type Clip = {
@@ -17,7 +17,6 @@ export type Clip = {
   /** seconds on the chapter's timeline */
   from: number;
   to: number;
-  header: boolean;
   captions: boolean;
 };
 
@@ -30,7 +29,6 @@ export const CLIPS: Clip[] = [
     format: 'landscape',
     from: 0,
     to: 18.7,
-    header: false,
     captions: true,
   },
   {
@@ -41,7 +39,6 @@ export const CLIPS: Clip[] = [
     format: 'square',
     from: 0,
     to: 18.7,
-    header: false,
     captions: false,
   },
   {
@@ -52,7 +49,6 @@ export const CLIPS: Clip[] = [
     format: 'square',
     from: 1.6,
     to: 8.0,
-    header: false,
     captions: false,
   },
   {
@@ -63,7 +59,6 @@ export const CLIPS: Clip[] = [
     format: 'landscape',
     from: 14.8,
     to: 18.7,
-    header: false,
     captions: false,
   },
 ];
