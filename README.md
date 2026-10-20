@@ -18,7 +18,7 @@ screen, the viewfinder cut through the scanning phone) and the site's
 encounter card (`apps/site`: navy, blue accent, green signed credentials,
 fingerprint and shield icons).
 
-Live: <https://real-life-org.github.io/trust-explainer/>
+Live: <https://real-life.org/trust-explainer/>
 
 ## Use
 
