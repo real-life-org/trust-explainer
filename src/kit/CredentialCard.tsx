@@ -1,14 +1,17 @@
 import React from 'react';
-import { C, FONT, MONO, PEOPLE } from '../theme';
-import { DOCK, type Who } from '../layout';
+import { C, FONT, MONO } from './theme';
+import { PEOPLE, type Who } from './cast';
 import { Icon } from './Icons';
+
+/** Size of a credential card in screen pixels. */
+export const CARD = { w: 300, h: 64 } as const;
 
 /** The site's encounter credential row (.tp-cred), in the light phone palette. */
 export const CredentialCard: React.FC<{ from: Who; to: Who }> = ({ from, to }) => (
   <div
     style={{
-      width: DOCK.w,
-      height: DOCK.h,
+      width: CARD.w,
+      height: CARD.h,
       boxSizing: 'border-box',
       display: 'flex',
       alignItems: 'center',

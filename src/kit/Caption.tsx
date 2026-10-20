@@ -1,11 +1,11 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
-import { C, FONT } from '../theme';
-import { Layout } from '../layout';
-import { useSequenceFade } from '../components/ui';
+import { C, FONT } from './theme';
+import type { Format } from './format';
+import { useSequenceFade } from './ui';
 
 /** One caption line at the top of the stage, for the length of its Sequence. */
-export const Caption: React.FC<{ step?: number; text: string; L: Layout; quiet?: boolean }> = ({ step, text, L, quiet }) => {
+export const Caption: React.FC<{ step?: number; text: string; F: Format; quiet?: boolean }> = ({ step, text, F, quiet }) => {
   const frame = useCurrentFrame();
   const opacity = useSequenceFade(8, 8);
   const rise = interpolate(frame, [0, 10], [8, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
@@ -14,7 +14,7 @@ export const Caption: React.FC<{ step?: number; text: string; L: Layout; quiet?:
       <div
         style={{
           position: 'absolute',
-          top: L.captionY,
+          top: F.captionY,
           left: 0,
           right: 0,
           display: 'flex',
@@ -24,7 +24,7 @@ export const Caption: React.FC<{ step?: number; text: string; L: Layout; quiet?:
           opacity,
           transform: `translateY(${rise}px)`,
           fontFamily: FONT,
-          fontSize: L.captionSize,
+          fontSize: F.captionSize,
           fontWeight: quiet ? 500 : 650,
           letterSpacing: '-0.01em',
           color: quiet ? C.gray2 : C.white,
@@ -35,12 +35,12 @@ export const Caption: React.FC<{ step?: number; text: string; L: Layout; quiet?:
         {step !== undefined ? (
           <span
             style={{
-              width: L.captionSize * 1.3,
-              height: L.captionSize * 1.3,
+              width: F.captionSize * 1.3,
+              height: F.captionSize * 1.3,
               borderRadius: '50%',
               background: C.tint,
               color: C.accentHigh,
-              fontSize: L.captionSize * 0.62,
+              fontSize: F.captionSize * 0.62,
               fontWeight: 700,
               display: 'flex',
               alignItems: 'center',

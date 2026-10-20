@@ -1,9 +1,10 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, interpolateColors, useCurrentFrame } from 'remotion';
-import { C } from '../theme';
-import { CODE, SCREEN } from '../layout';
-import { Icon } from '../components/Icons';
-import { At, useSequenceFade, useSpringAt } from '../components/ui';
+import { C } from '../../../kit/theme';
+import { SCREEN } from '../../../kit/geometry';
+import { CODE } from '../layout';
+import { Icon } from '../../../kit/Icons';
+import { At, useSequenceFade, useSpringAt } from '../../../kit/ui';
 
 /**
  * Step 2: Ben's scanner. The viewfinder is a hole cut through Ben's phone

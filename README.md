@@ -42,13 +42,56 @@ npm run render -- --browser-executable=/path/to/chrome
 node scripts/stills.mjs --browser-executable=/path/to/chrome
 ```
 
-## Timings
+## Structure
 
-All timings live in `src/timings.ts`, in seconds on the absolute timeline.
-Each step is its own component in `src/steps/` and runs in its own
-`<Sequence>` in `src/Encounter.tsx`, so a step can be retimed by changing one
-entry. Phone motion (the scan arc and the return) is computed from the same
-constants in `src/layout.ts`.
+The project is the shared base for an explainer of the trust protocol: one
+set of building blocks and one chapter model, rendered as video now, and
+later as an interactive deck and as animated graphics for the website.
+
+```text
+src/
+  kit/                 shared by every chapter, so everything looks alike
+    theme.ts           colours (site tokens, simulator screens), fonts
+    cast.ts            Ana and Ben: names, keys, each person's colour
+    geometry.ts        phone geometry, screen-to-stage mapping
+    format.ts          output formats (16:9, square) and stage metrics
+    time.ts            fps, seconds -> frames
+    chapter.ts         the chapter model: beats with captions
+    ChapterStage.tsx   the frame around every chapter: stage, header, captions
+    stage.tsx          background, header, name tag
+    Phone.tsx, CredentialCard.tsx, QrCode.tsx, Icons.tsx, ui.tsx
+  chapters/
+    index.ts           all chapters in telling order
+    encounter/         chapter "One encounter"
+  Root.tsx             one composition per chapter and format
+public/fonts/          Ubuntu Sans and Ubuntu Sans Mono, bundled so renders match
+```
+
+### Chapters and beats
+
+A chapter (`src/kit/chapter.ts`) is a scene plus a list of beats. Each beat
+has a start time and a caption and runs until the next beat starts. Beats
+are numbered in order; a `closing` beat is unnumbered. The shared
+`ChapterStage` draws the captions, so a chapter's scene only animates its
+content. In the deck, the end of each beat is where playback stops.
+
+Every chapter is rendered in every format in `src/kit/format.ts`; its
+compositions are named after the chapter, e.g. `Encounter` and
+`EncounterSquare`.
+
+To add a chapter: create `src/chapters/<id>/` with its scene and an
+`index.ts` exporting a `Chapter`, and add it to `src/chapters/index.ts`.
+
+## Chapter: One encounter
+
+Beats (captions) are in `src/chapters/encounter/index.ts`. Animation
+timings are in `src/chapters/encounter/timings.ts`, in seconds on the
+chapter's timeline. Each step is its own component in `steps/` and runs in
+its own `<Sequence>` in `Encounter.tsx`, so a step can be retimed by
+changing one entry. Phone motion (the scan arc and the return) is computed
+from the same constants in `layout.ts`, which also holds the code position,
+the credential dock, the contact rows and where the phones stand in each
+format.
 
 | Step | Seconds |
 |---|---|
@@ -65,16 +108,5 @@ constants in `src/layout.ts`.
 | Both credentials jump into the list and become the new row | 11.3 to 11.8 |
 | 7 Trust act on Ana | highlight 12.9, tap 13.9 |
 | Closing line | 15.6 to 18.0 |
-
-## Layout
-
-- `src/layout.ts`: phone geometry, credential dock, contact rows, stage
-  positions for both formats, the scan pose
-- `src/theme.ts`: colours (from the site tokens and the simulator), names, keys,
-  and each person's colour (Ana orange, Ben violet), used on the owner chip in
-  the top right of every screen, the label under the phone and the names on
-  the credential cards
-- `src/components/`: phone, QR code (real, scannable), credential card, icons
-- `public/fonts/`: Ubuntu Sans and Ubuntu Sans Mono, bundled so renders match
 
 Names and keys are illustration, as on the site.

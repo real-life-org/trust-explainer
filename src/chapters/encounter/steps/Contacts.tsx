@@ -1,11 +1,10 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, interpolateColors, useCurrentFrame } from 'remotion';
-import { C, NEUTRAL, type Tone } from '../theme';
+import { C, NEUTRAL, type Tone } from '../../../kit/theme';
 import { ROWS } from '../layout';
-import { Icon } from '../components/Icons';
-import { Avatar, Tap, usePress, useSequenceFade, useSpringAt } from '../components/ui';
-
-const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
+import { Icon } from '../../../kit/Icons';
+import { Avatar, Tap, usePress, useSequenceFade, useSpringAt } from '../../../kit/ui';
+import { clamp } from '../../../kit/time';
 const ROW_TOP = ROWS.top;
 const ROW_H = ROWS.h;
 

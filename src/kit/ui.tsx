@@ -1,8 +1,7 @@
 import React from 'react';
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
-import { C, FONT, MONO, type Tone } from '../theme';
-
-const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
+import { C, FONT, MONO, type Tone } from './theme';
+import { clamp } from './time';
 
 /** Opacity of a Sequence's content: fades in at its start and out at its end. */
 export function useSequenceFade(fadeIn = 8, fadeOut = 8): number {

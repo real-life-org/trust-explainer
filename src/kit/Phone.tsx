@@ -1,6 +1,7 @@
 import React from 'react';
-import { C, FONT, PEOPLE } from '../theme';
-import { CODE, Layout, ORIGIN, PHONE, Pose, SCREEN, Who } from '../layout';
+import { C, FONT } from './theme';
+import { PEOPLE, type Who } from './cast';
+import { ORIGIN, PHONE, type Pose, SCREEN } from './geometry';
 import { Avatar } from './ui';
 
 /**
@@ -8,24 +9,26 @@ import { Avatar } from './ui';
  * rim, black bezel, dynamic island and status bar, side buttons, a faint
  * glass sheen. The owner's avatar and name sit in the top right corner of
  * the app content on every screen.
- * `hole` (0..1) cuts the viewfinder out of the whole phone, so the code on
- * the phone underneath shows through, as in the ceremony simulator.
+ * `hole` cuts a square (screen-local centre and size) out of the whole
+ * phone, so whatever lies underneath shows through, as the viewfinder in
+ * the ceremony simulator.
  */
 export const Phone: React.FC<{
   owner: Who;
   pose: Pose;
-  L: Layout;
+  /** scale on the stage */
+  s: number;
   opacity?: number;
   lift?: number;
-  hole?: number;
+  hole?: { cx: number; cy: number; size: number };
   zIndex?: number;
   children: React.ReactNode;
-}> = ({ owner, pose, L, opacity = 1, lift = 0, hole = 0, zIndex, children }) => {
-  const size = CODE.hole * hole;
-  const hx = ORIGIN.x + SCREEN.w / 2 - size / 2;
-  const hy = ORIGIN.y + CODE.cy - size / 2;
+}> = ({ owner, pose, s, opacity = 1, lift = 0, hole, zIndex, children }) => {
+  const size = hole?.size ?? 0;
+  const hx = ORIGIN.x + (hole?.cx ?? 0) - size / 2;
+  const hy = ORIGIN.y + (hole?.cy ?? 0) - size / 2;
   const mask: React.CSSProperties =
-    hole > 0
+    size > 0
       ? {
           maskImage: 'linear-gradient(#000 0 0), linear-gradient(#000 0 0)',
           maskPosition: `0 0, ${hx}px ${hy}px`,
@@ -48,7 +51,7 @@ export const Phone: React.FC<{
         top: pose.y - PHONE.h / 2 + lift,
         width: PHONE.w,
         height: PHONE.h,
-        transform: `rotate(${pose.rot}deg) scale(${L.s})`,
+        transform: `rotate(${pose.rot}deg) scale(${s})`,
         transformOrigin: '50% 50%',
         opacity,
         zIndex,

@@ -1,28 +1,25 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, Sequence, spring, useCurrentFrame, useVideoConfig } from 'remotion';
-import { loadFonts } from './fonts';
-import { PEOPLE } from './theme';
-import { f, T } from './timings';
-import { phonePose, useLayout } from './layout';
-import { Phone } from './components/Phone';
+import { interpolate, Sequence, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { PEOPLE } from '../../kit/cast';
+import { SCREEN } from '../../kit/geometry';
+import { Phone } from '../../kit/Phone';
+import { NameTag } from '../../kit/stage';
+import { clamp, f } from '../../kit/time';
+import { T } from './timings';
+import { CODE, phonePose, useLayout } from './layout';
 import { ShowQr } from './steps/ShowQr';
 import { ScanCode } from './steps/ScanCode';
 import { ConfirmOnBen } from './steps/ConfirmOnBen';
 import { ConfirmBackOnAna } from './steps/ConfirmBackOnAna';
 import { Contacts } from './steps/Contacts';
 import { CredentialFlight } from './steps/CredentialFlight';
-import { Caption } from './steps/Caption';
-import { Background, Header, NameTag } from './steps/Stage';
-
-loadFonts();
-
-const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
 /** Sequence props for a span of absolute seconds. */
 const span = (s: { from: number; to: number }) => ({ from: f(s.from), durationInFrames: f(s.to) - f(s.from) });
 /** A moment inside a span, relative to the span's start. */
 const rel = (at: number, s: { from: number }) => f(at) - f(s.from);
 
+/** The encounter scene: two phones, the scan, both confirmations, the credential exchange, the trust act. */
 export const Encounter: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
@@ -36,17 +33,23 @@ export const Encounter: React.FC = () => {
     interpolate(frame, [f(T.scanMove.from), f(T.scanMove.from) + 10], [0, 1], clamp) *
     interpolate(frame, [f(T.confirmOnBen.from), f(T.confirmOnBen.from) + 8], [1, 0], clamp);
 
+  // the name tags dim while the phones are away from home
+  const away = interpolate(
+    frame,
+    [f(T.scanMove.from), f(T.scanMove.from) + 10, f(T.moveAway.to) - 6, f(T.moveAway.to) + 6],
+    [1, 0.25, 0.25, 1],
+    clamp,
+  );
+
   const toEnd = (from: number) => ({ from: f(from), durationInFrames: durationInFrames - f(from) });
 
   return (
-    <AbsoluteFill>
-      <Background />
-      <Header L={L} />
-      <NameTag who="A" L={L} />
-      <NameTag who="B" L={L} />
+    <>
+      <NameTag who="A" at={L.home.A} s={L.s} F={L} dim={away} />
+      <NameTag who="B" at={L.home.B} s={L.s} F={L} dim={away} />
 
       {/* Ana */}
-      <Phone owner="A" pose={phonePose('A', frame, L)} L={L} opacity={intro} lift={(1 - intro) * 40} zIndex={10}>
+      <Phone owner="A" pose={phonePose('A', frame, L)} s={L.s} opacity={intro} lift={(1 - intro) * 40} zIndex={10}>
         <Sequence name="1 Ana shows her code" {...span(T.qrOnAna)}>
           <ShowQr who="A" />
         </Sequence>
@@ -68,7 +71,15 @@ export const Encounter: React.FC = () => {
       </Phone>
 
       {/* Ben */}
-      <Phone owner="B" pose={phonePose('B', frame, L)} L={L} opacity={introB} lift={(1 - introB) * 40} hole={hole} zIndex={20}>
+      <Phone
+        owner="B"
+        pose={phonePose('B', frame, L)}
+        s={L.s}
+        opacity={introB}
+        lift={(1 - introB) * 40}
+        hole={{ cx: SCREEN.w / 2, cy: CODE.cy, size: CODE.hole * hole }}
+        zIndex={20}
+      >
         <Sequence name="Ben shows his code" {...span(T.codeOnBen)}>
           <ShowQr who="B" tapScanAt={rel(T.codeOnBen.tap, T.codeOnBen)} />
         </Sequence>
@@ -110,29 +121,6 @@ export const Encounter: React.FC = () => {
           L={L}
         />
       </Sequence>
-
-      {/* captions */}
-      <Sequence name="caption 1" {...span(T.captions.qr)} style={{ zIndex: 300 }}>
-        <Caption step={1} text="Ana shows her code" L={L} />
-      </Sequence>
-      <Sequence name="caption 2" {...span(T.captions.scan)} style={{ zIndex: 300 }}>
-        <Caption step={2} text="Ben scans it, phone over phone" L={L} />
-      </Sequence>
-      <Sequence name="caption 3" {...span(T.captions.confirm)} style={{ zIndex: 300 }}>
-        <Caption step={3} text="Ben confirms it is Ana and signs a credential for her" L={L} />
-      </Sequence>
-      <Sequence name="caption 4" {...span(T.captions.confirmBack)} style={{ zIndex: 300 }}>
-        <Caption step={4} text="Ana confirms Ben back and signs one for him" L={L} />
-      </Sequence>
-      <Sequence name="caption 5" {...span(T.captions.contacts)} style={{ zIndex: 300 }}>
-        <Caption step={5} text="A new contact on both phones" L={L} />
-      </Sequence>
-      <Sequence name="caption 6" {...span(T.captions.trust)} style={{ zIndex: 300 }}>
-        <Caption step={6} text="Trust is a separate act: Ana marks Ben as trusted" L={L} />
-      </Sequence>
-      <Sequence name="outro" {...span(T.captions.outro)} style={{ zIndex: 300 }}>
-        <Caption text="Key control, freshness and deliberate recognition." L={L} quiet />
-      </Sequence>
-    </AbsoluteFill>
+    </>
   );
 };

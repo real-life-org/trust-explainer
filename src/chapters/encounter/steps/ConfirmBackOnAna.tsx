@@ -1,10 +1,9 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
-import { PEOPLE } from '../theme';
-import { At, Avatar, Btn, Tap, usePress, useSequenceFade } from '../components/ui';
+import { PEOPLE } from '../../../kit/cast';
+import { At, Avatar, Btn, Tap, usePress, useSequenceFade } from '../../../kit/ui';
+import { clamp } from '../../../kit/time';
 import { CONFIRM_BTN } from './ConfirmOnBen';
-
-const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
 /**
  * Step 5: the counter-confirmation on Ana's phone, then "connected".

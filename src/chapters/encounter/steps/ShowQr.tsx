@@ -1,11 +1,12 @@
 import React from 'react';
 import { AbsoluteFill, interpolate } from 'remotion';
-import { C } from '../theme';
-import { CODE, SCREEN } from '../layout';
-import type { Who } from '../layout';
-import { QrCode } from '../components/QrCode';
-import { Icon } from '../components/Icons';
-import { At, Btn, Tap, usePress, useSequenceFade, useSpringAt } from '../components/ui';
+import { C } from '../../../kit/theme';
+import { SCREEN } from '../../../kit/geometry';
+import type { Who } from '../../../kit/cast';
+import { CODE } from '../layout';
+import { QrCode } from '../../../kit/QrCode';
+import { Icon } from '../../../kit/Icons';
+import { At, Btn, Tap, usePress, useSequenceFade, useSpringAt } from '../../../kit/ui';
 
 const DATA: Record<Who, string> = {
   A: 'rltp:encounter-scan@0.25;did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK;c=7f3a91c2',

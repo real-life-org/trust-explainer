@@ -1,79 +1,40 @@
-import { Easing, interpolate, useVideoConfig } from 'remotion';
-import { f, T } from './timings';
+import { Easing, interpolate } from 'remotion';
+import { useFormat, type Format } from '../../kit/format';
+import { ORIGIN, PHONE, type Pose, type Pt, rotate } from '../../kit/geometry';
+import type { Who } from '../../kit/cast';
+import { f } from '../../kit/time';
+import { T } from './timings';
 
-/**
- * Phone geometry in phone-local pixels (before scaling): a thin metal rim,
- * a black bezel `inset` wide, and a status bar `status` high above the app
- * content.
- */
-export const PHONE = { w: 364, h: 648, inset: 12, status: 44, radius: 58 } as const;
-/**
- * The app content area below the status bar. Screen-local coords, used by
- * the screens, start at its top-left corner.
- */
-export const SCREEN = { w: PHONE.w - 2 * PHONE.inset, h: PHONE.h - 2 * PHONE.inset - PHONE.status } as const;
-/** Where screen-local (0, 0) sits in phone-local pixels. */
-export const ORIGIN = { x: PHONE.inset, y: PHONE.inset + PHONE.status } as const;
 /** Ana's QR box and Ben's viewfinder share this centre (screen-local). */
 export const CODE = { cy: 270, box: 220, hole: 214 } as const;
 /** Where a received credential waits at the bottom of the screen until the contact list takes it in. */
-export const DOCK = { cy: 524, w: 300, h: 64 } as const;
+export const DOCK = { cy: 524 } as const;
 /** The contact list rows (screen-local); the first row is the new contact. */
 export const ROWS = { top: 132, h: 84 } as const;
 
-export type Who = 'A' | 'B';
-export type Pt = { x: number; y: number };
-export type Pose = Pt & { rot: number };
-
-export type Layout = {
-  square: boolean;
+/** The stage format plus where the two phones stand in it. */
+export type Layout = Format & {
   s: number; // phone scale
   home: Record<Who, Pt>;
   meet: Pt; // where the code sits during the scan
-  captionY: number;
-  captionSize: number;
-  headerPad: number;
 };
 
 export function useLayout(): Layout {
-  const { width, height } = useVideoConfig();
-  const square = width === height;
-  if (square) {
+  const F = useFormat();
+  if (F.square) {
     return {
-      square,
+      ...F,
       s: 0.84,
       home: { A: { x: 282, y: 562 }, B: { x: 798, y: 562 } },
       meet: { x: 540, y: 566 },
-      captionY: 132,
-      captionSize: 30,
-      headerPad: 48,
     };
   }
   return {
-    square,
+    ...F,
     s: 0.88,
     home: { A: { x: 700, y: 548 }, B: { x: 1220, y: 548 } },
     meet: { x: 960, y: 552 },
-    captionY: 112,
-    captionSize: 34,
-    headerPad: 64,
   };
-}
-
-const rad = (deg: number) => (deg * Math.PI) / 180;
-export const rotate = (v: Pt, deg: number): Pt => ({
-  x: v.x * Math.cos(rad(deg)) - v.y * Math.sin(rad(deg)),
-  y: v.x * Math.sin(rad(deg)) + v.y * Math.cos(rad(deg)),
-});
-
-/** A screen-local point of a phone, in stage coordinates, for a given pose. */
-export function screenPointToStage(pose: Pose, L: Layout, p: Pt): Pt {
-  const local = {
-    x: (p.x + ORIGIN.x - PHONE.w / 2) * L.s,
-    y: (p.y + ORIGIN.y - PHONE.h / 2) * L.s,
-  };
-  const r = rotate(local, pose.rot);
-  return { x: pose.x + r.x, y: pose.y + r.y };
 }
 
 const TILT: Record<Who, number> = { A: 45, B: -45 };

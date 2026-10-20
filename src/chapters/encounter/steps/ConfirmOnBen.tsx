@@ -1,10 +1,10 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
-import { C, PEOPLE } from '../theme';
-import { Icon } from '../components/Icons';
-import { At, Avatar, Btn, Tap, usePress, useSequenceFade } from '../components/ui';
-
-const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
+import { C } from '../../../kit/theme';
+import { PEOPLE } from '../../../kit/cast';
+import { Icon } from '../../../kit/Icons';
+import { At, Avatar, Btn, Tap, usePress, useSequenceFade } from '../../../kit/ui';
+import { clamp } from '../../../kit/time';
 
 /** Where the Confirm button sits (screen-local), shared by the confirm screens and their taps. */
 export const CONFIRM_BTN = { top: 380, h: 58 } as const;

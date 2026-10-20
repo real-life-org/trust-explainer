@@ -1,15 +1,11 @@
 import React from 'react';
 import { Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
-import { CredentialCard } from '../components/CredentialCard';
-import { DOCK, Layout, phonePose, ROWS, screenPointToStage, SCREEN, Who } from '../layout';
-import { f, T } from '../timings';
-
-const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
-
-const quad = (a: { x: number; y: number }, c: { x: number; y: number }, b: { x: number; y: number }, t: number) => {
-  const u = 1 - t;
-  return { x: u * u * a.x + 2 * u * t * c.x + t * t * b.x, y: u * u * a.y + 2 * u * t * c.y + t * t * b.y };
-};
+import { CredentialCard } from '../../../kit/CredentialCard';
+import { quad, screenPointToStage, SCREEN } from '../../../kit/geometry';
+import type { Who } from '../../../kit/cast';
+import { clamp, f } from '../../../kit/time';
+import { DOCK, type Layout, phonePose, ROWS } from '../layout';
+import { T } from '../timings';
 
 /**
  * Step 8: one signed credential leaves the issuer's screen, arcs over to the
@@ -30,9 +26,9 @@ export const CredentialFlight: React.FC<{ issuer: Who; holder: Who; start: numbe
 
   const fromPose = phonePose(issuer, abs, L);
   const toPose = phonePose(holder, abs, L);
-  const p0 = screenPointToStage(fromPose, L, { x: SCREEN.w / 2, y: 440 });
-  const dock = screenPointToStage(toPose, L, { x: SCREEN.w / 2, y: DOCK.cy });
-  const row = screenPointToStage(toPose, L, { x: SCREEN.w / 2, y: ROWS.top + (ROWS.h - 8) / 2 });
+  const p0 = screenPointToStage(fromPose, L.s, { x: SCREEN.w / 2, y: 440 });
+  const dock = screenPointToStage(toPose, L.s, { x: SCREEN.w / 2, y: DOCK.cy });
+  const row = screenPointToStage(toPose, L.s, { x: SCREEN.w / 2, y: ROWS.top + (ROWS.h - 8) / 2 });
 
   // 1. flight from issuer to the holder's dock
   const t = interpolate(frame, [0, flight], [0, 1], { ...clamp, easing: Easing.bezier(0.45, 0, 0.2, 1) });

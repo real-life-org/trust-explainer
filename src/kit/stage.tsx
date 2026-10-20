@@ -1,12 +1,12 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
-import { C, FONT, MONO, PEOPLE } from '../theme';
-import { Layout, PHONE, Who } from '../layout';
-import { Icon } from '../components/Icons';
-import { Avatar } from '../components/ui';
-import { f, T } from '../timings';
-
-const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
+import { C, FONT, MONO } from './theme';
+import { PEOPLE, type Who } from './cast';
+import type { Format } from './format';
+import { PHONE, type Pt } from './geometry';
+import { Icon } from './Icons';
+import { Avatar } from './ui';
+import { clamp } from './time';
 
 /** Navy background with a soft light behind the phones and the hero's fading dot grid. */
 export const Background: React.FC = () => (
@@ -29,13 +29,13 @@ export const Background: React.FC = () => (
 );
 
 /** Kicker in the top-left corner, "local first" in the top-right, like the site's encounter card. */
-export const Header: React.FC<{ L: Layout }> = ({ L }) => {
+export const Header: React.FC<{ kicker: string; F: Format }> = ({ kicker, F }) => {
   const frame = useCurrentFrame();
   const o = interpolate(frame, [0, 15], [0, 1], clamp);
-  const k = L.square ? 0.85 : 1;
+  const k = F.square ? 0.85 : 1;
   return (
     <AbsoluteFill style={{ opacity: o, fontFamily: FONT }}>
-      <div style={{ position: 'absolute', top: L.headerPad - 8, left: L.headerPad, display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div style={{ position: 'absolute', top: F.headerPad - 8, left: F.headerPad, display: 'flex', alignItems: 'center', gap: 14 }}>
         <div
           style={{
             width: 44 * k,
@@ -51,7 +51,7 @@ export const Header: React.FC<{ L: Layout }> = ({ L }) => {
         </div>
         <div>
           <div style={{ fontSize: 15 * k, fontWeight: 650, letterSpacing: '0.08em', textTransform: 'uppercase', color: C.gray3 }}>
-            One encounter
+            {kicker}
           </div>
           <div style={{ fontSize: 15 * k, color: C.gray4, marginTop: 2 }}>Real Life Trust Protocol</div>
         </div>
@@ -59,8 +59,8 @@ export const Header: React.FC<{ L: Layout }> = ({ L }) => {
       <div
         style={{
           position: 'absolute',
-          top: L.headerPad + 4,
-          right: L.headerPad,
+          top: F.headerPad + 4,
+          right: F.headerPad,
           display: 'flex',
           alignItems: 'center',
           gap: 9,
@@ -76,31 +76,34 @@ export const Header: React.FC<{ L: Layout }> = ({ L }) => {
   );
 };
 
-/** Name and fresh anchor under each phone's home position; dims while the phones travel. */
-export const NameTag: React.FC<{ who: Who; L: Layout }> = ({ who, L }) => {
+/**
+ * Name and key under a phone whose home centre is `at` and scale `s`.
+ * Fades in with the stage; `dim` (0..1) lets a chapter fade it while the
+ * phone is away.
+ */
+export const NameTag: React.FC<{ who: Who; at: Pt; s: number; F: Format; dim?: number }> = ({
+  who,
+  at,
+  s,
+  F,
+  dim = 1,
+}) => {
   const frame = useCurrentFrame();
   const p = PEOPLE[who];
-  const home = L.home[who];
-  const away = interpolate(
-    frame,
-    [f(T.scanMove.from), f(T.scanMove.from) + 10, f(T.moveAway.to) - 6, f(T.moveAway.to) + 6],
-    [1, 0.25, 0.25, 1],
-    clamp,
-  );
   const intro = interpolate(frame, [6, 24], [0, 1], clamp);
-  const k = L.square ? 0.85 : 1;
+  const k = F.square ? 0.85 : 1;
   return (
     <div
       style={{
         position: 'absolute',
-        left: home.x - 200,
+        left: at.x - 200,
         width: 400,
-        top: home.y + (PHONE.h / 2) * L.s + 24,
+        top: at.y + (PHONE.h / 2) * s + 24,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         fontFamily: FONT,
-        opacity: Math.min(away, intro),
+        opacity: Math.min(dim, intro),
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
