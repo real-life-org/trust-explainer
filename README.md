@@ -21,8 +21,8 @@ fingerprint and shield icons).
 
 ```sh
 npm install
-npm run dev             # deck at /, preview at /frame.html?scrub
-npm run build           # static deck in out/web/, works from any subpath
+npm run dev             # overview at /, preview at /frame.html?scrub
+npm run build           # static site in out/web/, works from any subpath
 npm run render          # out/encounter.mp4 (1920x1080)
 npm run render:square   # out/encounter-square.mp4 (1080x1080)
 npm run stills          # PNG of every beat's hold, both formats, in out/
@@ -31,7 +31,22 @@ npm run stills          # PNG of every beat's hold, both formats, in out/
 Video and stills need ffmpeg and a Chromium: `--browser=/path`, or
 `$CHROME_PATH`, or `/usr/bin/chromium`. No browser download is needed.
 
-## Deck
+The site is published with GitHub Pages from `main`
+(`.github/workflows/pages.yml`).
+
+## Overview
+
+`index.html` has three sections:
+
+- **Slides**: one preview per beat, by chapter. Click a slide, or
+  Present, to start the presentation there (fullscreen where the browser
+  allows it).
+- **Video**: the whole film, every chapter back to back, drawn live, with
+  a timeline (chapters as segments, a tick at every hold), fullscreen and a
+  16:9/square switch.
+- **Animations**: looping clips for websites, each with its embed code.
+
+## Presentation
 
 Each step plays the chapter up to the next beat's hold and stops there
 exactly; next while a step still plays finishes it at once. A chapter opens
@@ -46,10 +61,26 @@ smooth as the screen allows.
 | Home / End | start / end of the deck |
 | F | fullscreen |
 | H | hide the progress line |
+| Esc | back to the overview |
 
-The position is kept in the URL (`#encounter/2`: chapter and beat, 0 is the
-start state), so a reload or a shared link opens the same step.
+The position is kept in the URL (`#present/encounter/2`: chapter and beat,
+0 is the start state), so a reload or a shared link opens the same step.
 `?format=square` shows the square format.
+
+## Animations for websites
+
+A clip (`web/clips.ts`) is a stretch of one chapter in one format, with or
+without header and captions. `embed.html?clip=<id>` plays it in a loop,
+filling its frame, with a short fade where the loop starts over. It pauses
+while out of view and shows its last frame to visitors who prefer reduced
+motion. Embed it with an iframe; the overview copies the code:
+
+```html
+<iframe src="https://<site>/embed.html?clip=scan" title="Phone over phone"
+  loading="lazy" style="width:100%;aspect-ratio:1080/1080;border:0"></iframe>
+```
+
+To add a clip, add an entry to `CLIPS`.
 
 ## Preview
 
@@ -94,9 +125,15 @@ src/
     index.ts           all chapters in telling order
     encounter/         chapter "One encounter"
 web/
-  index.html, Deck.tsx       the deck
+  index.html, main.tsx       the overview, with the presentation on top
+  Overview.tsx, ui.tsx       slides, video player, animations
+  Deck.tsx, stops.ts         the presentation mode
+  film.ts                    all chapters as one film
+  clips.ts, ClipPlayer.tsx   looping clips for websites
+  embed.html, embed.tsx      one clip, for an iframe
   frame.html, frame.tsx      one chapter at one frame: export and preview
   ChapterView.tsx            a chapter on a stage scaled to fit
+  playhead.ts                a display-rate playhead (video, clips, preview)
 scripts/
   render.mjs           video and stills through headless Chromium and ffmpeg
   stills.mjs           stills of every hold

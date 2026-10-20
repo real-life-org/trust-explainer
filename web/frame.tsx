@@ -7,6 +7,7 @@ import { C, FONT, MONO } from '../src/kit/theme';
 import { f, FPS } from '../src/kit/time';
 import { ChapterView } from './ChapterView';
 import { CHAPTER, flag, FORMAT } from './params';
+import { usePlayhead } from './playhead';
 
 /**
  * One chapter at one frame (`?chapter=<id>&format=square`).
@@ -50,29 +51,16 @@ const Frame: React.FC = () => {
   }, []);
   if (!fonts) return null;
   return flag('scrub') ? (
-    <Scrub frame={frame} setFrame={setFrame} />
+    <Scrub />
   ) : (
     <ChapterView chapter={CHAPTER} size={FORMAT} frame={frame} />
   );
 };
 
 /** Preview: the stage scaled to fit, a play button, a timeline with the beats' holds marked. */
-const Scrub: React.FC<{ frame: number; setFrame: (n: number) => void }> = ({ frame, setFrame }) => {
-  const [playing, setPlaying] = useState(false);
-  useEffect(() => {
-    if (!playing) return;
-    let raf = 0;
-    let last = performance.now();
-    let at = frame;
-    const tick = (now: number) => {
-      at = (at + ((now - last) / 1000) * FPS) % durationInFrames;
-      last = now;
-      setFrame(at);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [playing]);
+const Scrub: React.FC = () => {
+  const { frame, playing, setPlaying, seek } = usePlayhead({ start: 0, end: durationInFrames - 1, loop: true });
+  const setFrame = seek;
   return (
     <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', fontFamily: FONT, color: C.gray2 }}>
       <div style={{ position: 'relative', flex: 1 }}>

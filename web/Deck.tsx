@@ -11,9 +11,17 @@ import { type Pos, stopsOf } from './stops';
 const holdOf = (p: Pos) => stopsOf(CHAPTERS[p.c])[p.k];
 const lastOf = (c: number): Pos => ({ c, k: stopsOf(CHAPTERS[c]).length - 1 });
 
-/** `#encounter/2`: chapter id and beat index (0 = the chapter's first beat). */
+/** `#present/encounter/2`: chapter id and beat index (0 = the chapter's first beat). */
+export function presentHash(p: Pos): string {
+  return `#present/${CHAPTERS[p.c].id}/${p.k}`;
+}
+
+export function isPresentHash(hash: string): boolean {
+  return hash.startsWith('#present/');
+}
+
 function readHash(): Pos {
-  const m = location.hash.match(/^#([\w-]+)\/(\d+)$/);
+  const m = location.hash.match(/^#present\/([\w-]+)\/(\d+)$/);
   const c = m ? CHAPTERS.findIndex((ch) => ch.id === m[1]) : -1;
   if (c < 0) return { c: 0, k: 0 };
   return { c, k: Math.min(Number(m![2]), lastOf(c).k) };
@@ -25,9 +33,10 @@ function readHash(): Pos {
  * exactly; next while a step still plays finishes it at once. Back jumps
  * to the previous hold. A chapter opens at its first beat's hold; at the
  * end of a chapter, next plays the following chapter in. The position
- * lives in the URL hash, so a reload stays on the same step.
+ * lives in the URL hash, so a reload stays on the same step. Escape, or
+ * leaving fullscreen other than with F, ends the show (`onExit`).
  */
-export const Deck: React.FC = () => {
+export const Deck: React.FC<{ onExit: () => void }> = ({ onExit }) => {
   const [pos, setPos] = useState<Pos>(readHash);
   const [frame, setFrame] = useState(() => holdOf(readHash()));
   const [fonts, setFonts] = useState(false);
@@ -37,6 +46,8 @@ export const Deck: React.FC = () => {
   /** the frame the clock runs toward while a step plays */
   const target = useRef<number | null>(null);
   const raf = useRef(0);
+  const onExitRef = useRef(onExit);
+  onExitRef.current = onExit;
 
   const chapter = CHAPTERS[pos.c];
   const steps = useMemo(() => beatSpans(chapter).map((b, i) => ({ i, step: b.step })).filter((b) => b.step), [chapter]);
@@ -51,7 +62,7 @@ export const Deck: React.FC = () => {
       frameRef.current = fr;
       setPos(p);
       setFrame(fr);
-      history.replaceState(null, '', `${location.search}#${CHAPTERS[p.c].id}/${p.k}`);
+      history.replaceState(null, '', `${location.search}${presentHash(p)}`);
     };
     const stop = () => {
       cancelAnimationFrame(raf.current);
@@ -124,8 +135,12 @@ export const Deck: React.FC = () => {
           jump(lastOf(CHAPTERS.length - 1));
           break;
         case 'f':
+          toggling = true;
           if (document.fullscreenElement) void document.exitFullscreen();
           else void document.documentElement.requestFullscreen();
+          break;
+        case 'Escape':
+          exit();
           break;
         case 'h':
           setHud((v) => !v);
@@ -136,11 +151,26 @@ export const Deck: React.FC = () => {
       e.preventDefault();
     };
     const onClick = (e: MouseEvent) => (e.shiftKey ? back() : next());
-    const onHash = () => jump(readHash());
+    const onHash = () => {
+      if (isPresentHash(location.hash)) jump(readHash());
+    };
+    /** fullscreen toggled with F stays a presentation; leaving it otherwise (Esc in fullscreen) ends it */
+    let toggling = false;
+    const onFullscreen = () => {
+      if (toggling) toggling = false;
+      else if (!document.fullscreenElement) exit();
+    };
+    const exit = () => {
+      stop();
+      if (document.fullscreenElement) void document.exitFullscreen();
+      onExitRef.current();
+    };
     window.addEventListener('keydown', onKey);
     window.addEventListener('click', onClick);
     window.addEventListener('hashchange', onHash);
+    document.addEventListener('fullscreenchange', onFullscreen);
     return () => {
+      document.removeEventListener('fullscreenchange', onFullscreen);
       stop();
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('click', onClick);
@@ -149,7 +179,7 @@ export const Deck: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ position: 'fixed', inset: 0, cursor: 'pointer', background: C.bg }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 100, cursor: 'pointer', background: C.bg }}>
       {fonts ? <ChapterView chapter={chapter} size={FORMAT} frame={frame} fit /> : null}
       {hud ? (
         <Progress
@@ -195,6 +225,6 @@ const Progress: React.FC<{ kicker: string; steps: boolean[]; start: boolean }> =
         />
       ))}
     </span>
-    {start ? <span>→ next · ← back · F fullscreen · H hide</span> : null}
+    {start ? <span>→ next · ← back · F fullscreen · H hide · Esc overview</span> : null}
   </div>
 );

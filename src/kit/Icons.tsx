@@ -22,6 +22,10 @@ const paths = {
   ],
   check: ['M20 6 9 17l-5-5'],
   scan: ['M3 7V5a2 2 0 0 1 2-2h2', 'M17 3h2a2 2 0 0 1 2 2v2', 'M21 17v2a2 2 0 0 1-2 2h-2', 'M7 21H5a2 2 0 0 1-2-2v-2'],
+  play: ['M6 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L7.5 3.64A1 1 0 0 0 6 4.5z'],
+  pause: ['M7 4h3v16H7z', 'M14 4h3v16h-3z'],
+  maximize: ['M8 3H5a2 2 0 0 0-2 2v3', 'M21 8V5a2 2 0 0 0-2-2h-3', 'M3 16v3a2 2 0 0 0 2 2h3', 'M16 21h3a2 2 0 0 0 2-2v-3'],
+  code: ['m16 18 6-6-6-6', 'm8 6-6 6 6 6'],
 } as const;
 
 export type IconName = keyof typeof paths;

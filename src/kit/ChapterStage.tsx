@@ -9,19 +9,26 @@ import { Caption } from './Caption';
 
 loadFonts();
 
+/** What the stage shows around the scene; graphics for websites can leave out header and captions. */
+export type StageOptions = { header?: boolean; captions?: boolean };
+
 /**
  * The frame every chapter is shown in: navy stage, header with the
  * chapter's kicker, the scene, and one caption per beat on top.
  */
-export const ChapterStage: React.FC<{ chapter: Chapter }> = ({ chapter }) => {
+export const ChapterStage: React.FC<{ chapter: Chapter } & StageOptions> = ({
+  chapter,
+  header = true,
+  captions = true,
+}) => {
   const F = useFormat();
   const { Scene } = chapter;
   return (
     <AbsoluteFill>
       <Background />
-      <Header kicker={chapter.kicker} F={F} />
+      {header ? <Header kicker={chapter.kicker} F={F} /> : null}
       <Scene />
-      {beatSpans(chapter).map((b) => (
+      {(captions ? beatSpans(chapter) : []).map((b) => (
         <Sequence
           key={b.id}
           name={`caption ${b.step ?? b.id}`}

@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import type { Chapter } from '../src/kit/chapter';
-import { ChapterStage } from '../src/kit/ChapterStage';
+import { ChapterStage, type StageOptions } from '../src/kit/ChapterStage';
 import { FPS, f } from '../src/kit/time';
 import { Timeline } from '../src/kit/timeline';
 
@@ -11,12 +11,9 @@ export type StageSize = { width: number; height: number };
  * `fit` the stage is scaled to fill its parent, letterboxed; without, it is
  * drawn at 1:1 (the video export).
  */
-export const ChapterView: React.FC<{ chapter: Chapter; size: StageSize; frame: number; fit?: boolean }> = ({
-  chapter,
-  size,
-  frame,
-  fit,
-}) => {
+export const ChapterView: React.FC<
+  { chapter: Chapter; size: StageSize; frame: number; fit?: boolean; opacity?: number } & StageOptions
+> = ({ chapter, size, frame, fit, opacity = 1, header, captions }) => {
   const box = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   useLayoutEffect(() => {
@@ -40,10 +37,11 @@ export const ChapterView: React.FC<{ chapter: Chapter; size: StageSize; frame: n
           height: size.height,
           overflow: 'hidden',
           transform: `translate(-50%, -50%) scale(${scale})`,
+          opacity,
         }}
       >
         <Timeline frame={frame} fps={FPS} width={size.width} height={size.height} durationInFrames={f(chapter.durationS)}>
-          <ChapterStage chapter={chapter} />
+          <ChapterStage chapter={chapter} header={header} captions={captions} />
         </Timeline>
       </div>
     </div>
