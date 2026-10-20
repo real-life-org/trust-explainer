@@ -1,9 +1,9 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, interpolateColors, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { C, NEUTRAL, type Tone } from '../../../kit/theme';
 import { ROWS } from '../layout';
 import { Icon } from '../../../kit/Icons';
-import { Avatar, Tap, usePress, useSequenceFade, useSpringAt } from '../../../kit/ui';
+import { Avatar, useSequenceFade, useSpringAt } from '../../../kit/ui';
 import { clamp } from '../../../kit/time';
 const ROW_TOP = ROWS.top;
 const ROW_H = ROWS.h;
@@ -11,9 +11,7 @@ const ROW_H = ROWS.h;
 type Person = { name: string; initial: string; tone?: Tone };
 
 /**
- * Step 6 (new contact in the list) and, when `trust` is given, step 7: the
- * user marks the new contact as trusted with one deliberate tap.
- * The new row takes over from the received credential, which jumps onto its
+ * Step 4: the new contact in the list. The new row takes over from the received credential, which jumps onto its
  * place (see CredentialFlight); the row keeps a green "signed" line.
  * All frame props are relative to this Sequence.
  */
@@ -22,8 +20,7 @@ export const Contacts: React.FC<{
   others: Array<Person & { trusted: boolean }>;
   roomAt: number;
   newRowAt: number;
-  trust?: { highlightAt: number; tapAt: number };
-}> = ({ peer, others, roomAt, newRowAt, trust }) => {
+}> = ({ peer, others, roomAt, newRowAt }) => {
   const frame = useCurrentFrame();
   const opacity = useSequenceFade(8, 0);
   const room = useSpringAt(roomAt, 200, 14);
@@ -47,7 +44,9 @@ export const Contacts: React.FC<{
           opacity: inP,
         }}
       >
-        <Row person={peer} signed>{trust ? <TrustButton {...trust} /> : <TrustButtonIdle />}</Row>
+        <Row person={peer} signed>
+          <TrustButtonIdle />
+        </Row>
         <div
           style={{
             position: 'absolute',
@@ -79,7 +78,6 @@ export const Contacts: React.FC<{
         </div>
       ))}
 
-      {trust ? <Tap at={trust.tapAt} x={258} y={ROW_TOP + (ROW_H - 8) / 2} /> : null}
     </AbsoluteFill>
   );
 };
@@ -135,28 +133,3 @@ const TrustButtonIdle: React.FC = () => (
     Trust
   </div>
 );
-
-/** The trust act: highlighted, tapped once, then filled. */
-const TrustButton: React.FC<{ highlightAt: number; tapAt: number }> = ({ highlightAt, tapAt }) => {
-  const frame = useCurrentFrame();
-  const press = usePress(tapAt);
-  const ring = interpolate(frame, [highlightAt, highlightAt + 12, tapAt, tapAt + 10], [0, 1, 1, 0], clamp);
-  const on = interpolate(frame, [tapAt, tapAt + 6], [0, 1], clamp);
-  const bg = interpolateColors(on, [0, 1], ['oklch(98% 0.003 265)', C.primary]);
-  const fg = interpolateColors(on, [0, 1], [C.primary, 'oklch(100% 0 0)']);
-  return (
-    <div
-      style={{
-        ...pill,
-        border: `2px solid ${on > 0.5 ? C.primary : 'oklch(80% 0.06 264)'}`,
-        background: bg,
-        color: fg,
-        transform: `scale(${press})`,
-        boxShadow: `0 0 0 ${5 * ring}px oklch(65% 0.19 264 / ${0.35 * ring})`,
-      }}
-    >
-      <Icon name={on > 0.5 ? 'shieldCheck' : 'shield'} size={19} color={fg} />
-      {on > 0.5 ? 'Trusted' : 'Trust'}
-    </div>
-  );
-};

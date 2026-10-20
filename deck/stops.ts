@@ -1,5 +1,4 @@
-import { beatSpans, type Chapter } from '../src/kit/chapter';
-import { CAPTION_FADE } from '../src/kit/Caption';
+import { beatSpans, CAPTION_FADE, type Chapter } from '../src/kit/chapter';
 import { f } from '../src/kit/time';
 
 /**

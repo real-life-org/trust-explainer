@@ -19,7 +19,7 @@ const span = (s: { from: number; to: number }) => ({ from: f(s.from), durationIn
 /** A moment inside a span, relative to the span's start. */
 const rel = (at: number, s: { from: number }) => f(at) - f(s.from);
 
-/** The encounter scene: two phones, the scan, both confirmations, the credential exchange, the trust act. */
+/** The encounter scene: two phones, the scan, both confirmations, the credentials becoming contacts. */
 export const Encounter: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
@@ -28,10 +28,10 @@ export const Encounter: React.FC = () => {
   const intro = spring({ frame, fps, config: { damping: 200 }, durationInFrames: f(T.intro.to - T.intro.from) });
   const introB = spring({ frame: frame - 4, fps, config: { damping: 200 }, durationInFrames: f(T.intro.to - T.intro.from) });
 
-  // the viewfinder hole opens when Ben's phone sets off and closes when the confirmation takes over
+  // the viewfinder hole opens when Ben's phone sets off and closes when it leaves Ana's code
   const hole =
     interpolate(frame, [f(T.scanMove.from), f(T.scanMove.from) + 10], [0, 1], clamp) *
-    interpolate(frame, [f(T.confirmOnBen.from), f(T.confirmOnBen.from) + 8], [1, 0], clamp);
+    interpolate(frame, [f(T.moveAway.from), f(T.moveAway.from) + 8], [1, 0], clamp);
 
   // the name tags dim while the phones are away from home
   const away = interpolate(
@@ -50,22 +50,21 @@ export const Encounter: React.FC = () => {
 
       {/* Ana */}
       <Phone owner="A" pose={phonePose('A', frame, L)} s={L.s} opacity={intro} lift={(1 - intro) * 40} zIndex={10}>
-        <Sequence name="1 Ana shows her code" {...span(T.qrOnAna)}>
+        <Sequence name="Ana shows her code" {...span(T.qrOnAna)}>
           <ShowQr who="A" />
         </Sequence>
-        <Sequence name="5 Ana confirms back" {...span(T.confirmBackOnAna)}>
+        <Sequence name="3 Ana confirms back" {...span(T.confirmBackOnAna)}>
           <ConfirmBackOnAna tapAt={rel(T.confirmBackOnAna.tap, T.confirmBackOnAna)} />
         </Sequence>
-        <Sequence name="6+7 Ana contacts, trust act" {...span(T.contacts)}>
+        <Sequence name="4 Ana contacts" {...span(T.contacts)}>
           <Contacts
             peer={PEOPLE.B}
             others={[
               { name: 'Clara', initial: 'C', trusted: true },
               { name: 'Dev', initial: 'D', trusted: false },
             ]}
-            roomAt={rel(T.credToRow.from, T.contacts)}
-            newRowAt={rel(T.contacts.newRow, T.contacts)}
-            trust={{ highlightAt: rel(T.trust.from, T.contacts), tapAt: rel(T.trust.tap, T.contacts) }}
+            roomAt={rel(T.credToRow.A.from, T.contacts)}
+            newRowAt={rel(T.credToRow.A.to, T.contacts)}
           />
         </Sequence>
       </Phone>
@@ -83,21 +82,21 @@ export const Encounter: React.FC = () => {
         <Sequence name="Ben shows his code" {...span(T.codeOnBen)}>
           <ShowQr who="B" tapScanAt={rel(T.codeOnBen.tap, T.codeOnBen)} />
         </Sequence>
-        <Sequence name="2 Ben scans" {...span(T.scannerOnBen)}>
+        <Sequence name="1 Ben scans" {...span(T.scannerOnBen)}>
           <ScanCode recognizedAt={rel(T.recognized, T.scannerOnBen)} />
         </Sequence>
-        <Sequence name="3 Ben confirms" {...span(T.confirmOnBen)}>
+        <Sequence name="2 Ben confirms" {...span(T.confirmOnBen)}>
           <ConfirmOnBen tapAt={rel(T.confirmOnBen.tap, T.confirmOnBen)} />
         </Sequence>
-        <Sequence name="6 Ben contacts" {...span(T.contacts)}>
+        <Sequence name="4 Ben contacts" {...span(T.contacts)}>
           <Contacts
             peer={PEOPLE.A}
             others={[
               { name: 'Eli', initial: 'E', trusted: true },
               { name: 'Kai', initial: 'K', trusted: false },
             ]}
-            roomAt={rel(T.credToRow.from, T.contacts)}
-            newRowAt={rel(T.contacts.newRow, T.contacts)}
+            roomAt={rel(T.credToRow.B.from, T.contacts)}
+            newRowAt={rel(T.credToRow.B.to, T.contacts)}
           />
         </Sequence>
       </Phone>

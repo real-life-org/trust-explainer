@@ -3,9 +3,7 @@ import { AbsoluteFill, interpolate, useCurrentFrame } from 'remotion';
 import { C, FONT } from './theme';
 import type { Format } from './format';
 import { useSequenceFade } from './ui';
-
-/** Frames a caption takes to fade in, and to fade out at the end of its beat. */
-export const CAPTION_FADE = 8;
+import { CAPTION_FADE } from './chapter';
 
 /** One caption line at the top of the stage, for the length of its Sequence. */
 export const Caption: React.FC<{ step?: number; text: string; F: Format; quiet?: boolean }> = ({ step, text, F, quiet }) => {

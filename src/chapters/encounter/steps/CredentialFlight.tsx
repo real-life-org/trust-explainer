@@ -37,8 +37,8 @@ export const CredentialFlight: React.FC<{ issuer: Who; holder: Who; start: numbe
   const rot = fromPose.rot * (1 - t) + toPose.rot * t;
 
   // 2. the jump into the contact list, a short hop up the screen
-  const j0 = f(T.credToRow.from) - start;
-  const j1 = f(T.credToRow.to) - start;
+  const j0 = f(T.credToRow[holder].from) - start;
+  const j1 = f(T.credToRow[holder].to) - start;
   const j = interpolate(frame, [j0, j1], [0, 1], { ...clamp, easing: Easing.bezier(0.5, 0, 0.25, 1) });
   const hop = quad(dock, { x: dock.x + 70 * L.s, y: (dock.y + row.y) / 2 }, row, j);
   const pos = frame < j0 ? fly : hop;

@@ -10,12 +10,10 @@ export const encounter: Chapter = {
   durationS: DURATION_S,
   Scene: Encounter,
   beats: [
-    { id: 'qr', from: 0.4, caption: 'Ana shows her code' },
-    { id: 'scan', from: 2.0, caption: 'Ben scans it, phone over phone' },
-    { id: 'confirm', from: 4.8, caption: 'Ben confirms it is Ana and signs a credential for her' },
-    { id: 'confirm-back', from: 7.8, caption: 'Ana confirms Ben back and signs one for him' },
-    { id: 'contacts', from: 11.0, caption: 'A new contact on both phones' },
-    { id: 'trust', from: 12.9, caption: 'Trust is a separate act: Ana marks Ben as trusted' },
-    { id: 'outro', from: 15.6, caption: 'Key control, freshness and deliberate recognition.', closing: true },
+    { id: 'start', from: 0.3, hold: 1.2, caption: 'Ana and Ben meet. Each phone shows its code.', quiet: true },
+    { id: 'scan', from: 1.6, hold: 7.7, caption: "Ben scans Ana's code, phone over phone" },
+    { id: 'confirm', from: 8.0, hold: 11.4, caption: 'Ben confirms it is Ana and signs a credential for her' },
+    { id: 'confirm-back', from: 11.8, hold: 15.3, caption: 'Ana confirms Ben back and signs one for him' },
+    { id: 'contacts', from: 15.7, hold: 17.7, caption: 'The credentials become contacts on both phones' },
   ],
 };
