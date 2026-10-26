@@ -4,6 +4,7 @@ import { Icon } from '../src/kit/Icons';
 import { C, MONO } from '../src/kit/theme';
 import { FPS } from '../src/kit/time';
 import { ChapterView } from './ChapterView';
+import { chapterLabel } from '../src/chapters/outline';
 import { FILM, FILM_FRAMES, FILM_HOLDS, partAt } from './film';
 import { mount, Page } from './Page';
 import { usePlayhead } from './playhead';
@@ -97,7 +98,7 @@ const Timeline: React.FC<{ frame: number; onSeek: (n: number) => void }> = ({ fr
       {FILM.map((p) => (
         <div
           key={p.chapter.id}
-          title={p.chapter.kicker}
+          title={chapterLabel(p.chapter)}
           style={{
             position: 'absolute',
             top: 10,

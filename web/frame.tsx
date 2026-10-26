@@ -7,6 +7,8 @@ import { C, FONT, MONO } from '../src/kit/theme';
 import { f, FPS } from '../src/kit/time';
 import { ChapterView } from './ChapterView';
 import { CHAPTER, flag, FORMAT } from './params';
+import { CHAPTERS } from '../src/chapters';
+import { principleNumber } from '../src/chapters/outline';
 import { usePlayhead } from './playhead';
 
 /**
@@ -22,7 +24,15 @@ declare global {
   interface Window {
     __frame?: {
       ready: Promise<void>;
-      info: { fps: number; durationInFrames: number; width: number; height: number; holds: Array<{ id: string; frame: number }> };
+      info: {
+        fps: number;
+        durationInFrames: number;
+        width: number;
+        height: number;
+        holds: Array<{ id: string; frame: number }>;
+        /** every built chapter in telling order, with its principle's number ("04") */
+        chapters: Array<{ id: string; number?: string }>;
+      };
       set: (n: number) => Promise<void>;
     };
   }
@@ -35,7 +45,14 @@ const painted = () => new Promise<void>((r) => requestAnimationFrame(() => reque
 let setFrameOutside: (n: number) => void = () => undefined;
 window.__frame = {
   ready: loadFonts().then(painted),
-  info: { fps: FPS, durationInFrames, width: FORMAT.width, height: FORMAT.height, holds },
+  info: {
+    fps: FPS,
+    durationInFrames,
+    width: FORMAT.width,
+    height: FORMAT.height,
+    holds,
+    chapters: CHAPTERS.map((c) => ({ id: c.id, number: principleNumber(c.id) })),
+  },
   set: (n) => {
     flushSync(() => setFrameOutside(n));
     return painted();

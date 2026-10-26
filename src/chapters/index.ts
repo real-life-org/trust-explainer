@@ -1,5 +1,5 @@
 import type { Chapter } from '../kit/chapter';
-import { encounter } from './encounter';
+import { OUTLINE } from './outline';
 
-/** All chapters of the explainer, in telling order. */
-export const CHAPTERS: Chapter[] = [encounter];
+/** All built chapters of the explainer, in telling order (the deck's order). */
+export const CHAPTERS: Chapter[] = OUTLINE.flatMap((e) => (e.chapter ? [e.chapter] : []));

@@ -9,8 +9,8 @@
   "scripts": {
     "dev": "vite --config web/vite.config.ts",
     "build": "vite build --config web/vite.config.ts",
-    "render": "node scripts/render.mjs --chapter encounter --out out/encounter.mp4",
-    "render:square": "node scripts/render.mjs --chapter encounter --format square --out out/encounter-square.mp4",
+    "render": "node scripts/render.mjs --chapter no-issuer --out out/no-issuer.mp4",
+    "render:square": "node scripts/render.mjs --chapter no-issuer --format square --out out/no-issuer-square.mp4",
     "stills": "node scripts/stills.mjs",
     "typecheck": "tsc --noEmit"
   },

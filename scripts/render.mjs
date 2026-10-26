@@ -2,8 +2,8 @@
 // uses: a headless Chromium draws web/frame.html frame by frame, ffmpeg
 // encodes the screenshots.
 //
-//   node scripts/render.mjs --chapter encounter [--format square] --out out/encounter.mp4
-//   node scripts/render.mjs --chapter encounter --stills out/still   (one PNG per beat hold)
+//   node scripts/render.mjs --chapter no-issuer [--format square] --out out/no-issuer.mp4
+//   node scripts/render.mjs --chapter no-issuer --stills out/still   (one PNG per beat hold)
 //   node scripts/render.mjs ... --frames 0,90,180 --stills out/x       (chosen frames)
 //   node scripts/render.mjs ... --every 6 --stills out/seq/f          (every nth frame)
 //
@@ -25,7 +25,7 @@ function args(argv) {
   return out;
 }
 
-function browserPath(opt) {
+export function browserPath(opt) {
   const candidates = [opt, process.env.CHROME_PATH, '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome'];
   const found = candidates.find((p) => p && existsSync(p));
   if (!found) throw new Error('no Chromium found: pass --browser=/path/to/chrome or set CHROME_PATH');
@@ -43,6 +43,11 @@ export async function openChapter({ chapter, format = '', browser: browserOpt })
   await probe.goto(url);
   const info = await probe.evaluate(() => window.__frame.info);
   await probe.close();
+  if (chapter && !info.chapters.some((c) => c.id === chapter)) {
+    await browser.close();
+    await server.close();
+    throw new Error(`unknown chapter "${chapter}"; chapters: ${info.chapters.map((c) => c.id).join(', ')}`);
+  }
   const page = await browser.newPage({ viewport: { width: info.width, height: info.height }, deviceScaleFactor: 1 });
   page.on('pageerror', (e) => console.error('page error:', e.message));
   await page.goto(url);
@@ -80,11 +85,14 @@ async function toVideo({ info, shot }, out) {
 async function toStills({ info, shot }, prefix, frames) {
   mkdirSync(dirname(prefix), { recursive: true });
   const { writeFile } = await import('node:fs/promises');
+  const files = [];
   for (const [name, n] of frames) {
     const file = `${prefix}-${name}.png`;
     await writeFile(file, await shot(n));
     console.log(file);
+    files.push(file);
   }
+  return files;
 }
 
 /** Which frames to write as stills: chosen ones, every nth, or each beat's hold. */
@@ -98,11 +106,12 @@ function stillFrames(info, opt) {
   return info.holds.map((h, i) => [`${i}-${h.id}`, h.frame]);
 }
 
+/** Renders a video, or stills; for stills, returns the files written. */
 export async function render(opt) {
   if (!opt.chapter) throw new Error('--chapter is required');
   const session = await openChapter(opt);
   try {
-    if (opt.stills) await toStills(session, opt.stills, stillFrames(session.info, opt));
+    if (opt.stills) return await toStills(session, opt.stills, stillFrames(session.info, opt));
     else await toVideo(session, opt.out ?? `out/${opt.chapter}${opt.format ? `-${opt.format}` : ''}.mp4`);
   } finally {
     await session.close();

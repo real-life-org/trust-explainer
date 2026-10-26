@@ -1,5 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { CHAPTERS } from '../src/chapters';
+import { ENCOUNTER_BEAT } from '../src/chapters/no-issuer';
+import { chapterLabel } from '../src/chapters/outline';
 import { beatSpans } from '../src/kit/chapter';
 import { FORMATS } from '../src/kit/format';
 import { Icon } from '../src/kit/Icons';
@@ -16,12 +18,18 @@ const lastOf = (c: number): Pos => ({ c, k: stopsOf(CHAPTERS[c]).length - 1 });
 const SLIDES: Pos[] = CHAPTERS.flatMap((ch, c) => stopsOf(ch).map((_, k) => ({ c, k })));
 const indexOf = (p: Pos) => SLIDES.findIndex((s) => s.c === p.c && s.k === p.k);
 
-/** `#encounter/2`: chapter id and beat index (0 = the chapter's first beat). */
+/** Links from before chapter ids changed: old id -> new id and how far its beats moved. */
+const MOVED: Record<string, { id: string; beat: number }> = { encounter: { id: 'no-issuer', beat: ENCOUNTER_BEAT } };
+
+/** `#no-issuer/2`: chapter id and beat index (0 = the chapter's first beat). */
 function readHash(): Pos {
   const m = location.hash.match(/^#([\w-]+)\/(\d+)$/);
-  const c = m ? CHAPTERS.findIndex((ch) => ch.id === m[1]) : -1;
+  if (!m) return { c: 0, k: 0 };
+  const moved = MOVED[m[1]];
+  const id = moved?.id ?? m[1];
+  const c = CHAPTERS.findIndex((ch) => ch.id === id);
   if (c < 0) return { c: 0, k: 0 };
-  return { c, k: Math.min(Number(m![2]), lastOf(c).k) };
+  return { c, k: Math.min(Number(m[2]) + (moved?.beat ?? 0), lastOf(c).k) };
 }
 
 /**
@@ -170,7 +178,7 @@ const SlidesPage: React.FC = () => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 650, color: C.gray3 }}>
-            {chapter.kicker}
+            {chapterLabel(chapter)}
           </span>
           <span style={{ fontSize: 14, color: C.gray4 }}>
             Slide {index + 1} of {SLIDES.length}
@@ -207,7 +215,7 @@ const Strip: React.FC<{ current: Pos; onPick: (p: Pos) => void }> = ({ current, 
       {CHAPTERS.map((chapter, c) => (
         <div key={chapter.id} style={{ marginBottom: 18 }}>
           <div style={{ fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 650, color: C.gray3, margin: '0 0 10px 22px' }}>
-            {chapter.kicker}
+            {chapterLabel(chapter)}
           </div>
           {beatSpans(chapter).map((b, k) => {
             n += 1;

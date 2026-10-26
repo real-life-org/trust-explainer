@@ -34,7 +34,7 @@ export const ChapterStage: React.FC<{ chapter: Chapter } & StageOptions> = ({
           durationInFrames={f(b.to) - f(b.from)}
           style={{ zIndex: 300 }}
         >
-          <Caption step={b.step} text={b.caption} F={F} quiet={b.quiet} />
+          <Caption step={b.step} text={b.caption} F={F} quiet={b.quiet} emphasis={b.emphasis} />
         </Sequence>
       ))}
     </AbsoluteFill>
