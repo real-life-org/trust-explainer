@@ -63,6 +63,16 @@ export const CLIPS: Clip[] = [
     to: ENCOUNTER_AT + ENCOUNTER_S,
     captions: false,
   },
+  {
+    id: 'no-issuer-picture',
+    title: 'Issued or made',
+    description: 'The picture of principle 04: trust tied to one issuer, and trust made pair by pair.',
+    chapter: 'no-issuer',
+    format: 'landscape',
+    from: 0,
+    to: ENCOUNTER_AT,
+    captions: true,
+  },
 ];
 
 export function clipChapter(clip: Clip): Chapter {
