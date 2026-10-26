@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { CHAPTERS } from '../src/chapters';
 import { ENCOUNTER_BEAT } from '../src/chapters/no-issuer';
+import { chapterLabel } from '../src/chapters/outline';
 import { beatSpans } from '../src/kit/chapter';
 import { FORMATS } from '../src/kit/format';
 import { Icon } from '../src/kit/Icons';
@@ -177,7 +178,7 @@ const SlidesPage: React.FC = () => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 650, color: C.gray3 }}>
-            {chapter.kicker}
+            {chapterLabel(chapter)}
           </span>
           <span style={{ fontSize: 14, color: C.gray4 }}>
             Slide {index + 1} of {SLIDES.length}
@@ -214,7 +215,7 @@ const Strip: React.FC<{ current: Pos; onPick: (p: Pos) => void }> = ({ current, 
       {CHAPTERS.map((chapter, c) => (
         <div key={chapter.id} style={{ marginBottom: 18 }}>
           <div style={{ fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 650, color: C.gray3, margin: '0 0 10px 22px' }}>
-            {chapter.kicker}
+            {chapterLabel(chapter)}
           </div>
           {beatSpans(chapter).map((b, k) => {
             n += 1;

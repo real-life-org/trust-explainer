@@ -1,5 +1,8 @@
 import { joinParts, type Chapter, type Part } from '../../kit/chapter';
 import { encounterPart } from '../encounter';
+import { PRINCIPLES } from '../principles';
+
+const principle = PRINCIPLES['no-issuer'];
 
 const PARTS: Part[] = [encounterPart];
 
@@ -12,6 +15,7 @@ export const ENCOUNTER_BEAT = PARTS.slice(0, PARTS.indexOf(encounterPart)).reduc
 export const noIssuer: Chapter = {
   id: 'no-issuer',
   composition: 'NoIssuer',
-  kicker: 'No issuer',
+  kicker: principle.title,
+  principle,
   ...joinParts(PARTS),
 };

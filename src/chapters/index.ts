@@ -1,5 +1,5 @@
 import type { Chapter } from '../kit/chapter';
-import { noIssuer } from './no-issuer';
+import { OUTLINE } from './outline';
 
-/** All chapters of the explainer, in telling order. */
-export const CHAPTERS: Chapter[] = [noIssuer];
+/** All built chapters of the explainer, in telling order (the deck's order). */
+export const CHAPTERS: Chapter[] = OUTLINE.flatMap((e) => (e.chapter ? [e.chapter] : []));
