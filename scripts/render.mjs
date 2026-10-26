@@ -25,7 +25,7 @@ function args(argv) {
   return out;
 }
 
-function browserPath(opt) {
+export function browserPath(opt) {
   const candidates = [opt, process.env.CHROME_PATH, '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome'];
   const found = candidates.find((p) => p && existsSync(p));
   if (!found) throw new Error('no Chromium found: pass --browser=/path/to/chrome or set CHROME_PATH');
@@ -80,11 +80,14 @@ async function toVideo({ info, shot }, out) {
 async function toStills({ info, shot }, prefix, frames) {
   mkdirSync(dirname(prefix), { recursive: true });
   const { writeFile } = await import('node:fs/promises');
+  const files = [];
   for (const [name, n] of frames) {
     const file = `${prefix}-${name}.png`;
     await writeFile(file, await shot(n));
     console.log(file);
+    files.push(file);
   }
+  return files;
 }
 
 /** Which frames to write as stills: chosen ones, every nth, or each beat's hold. */
@@ -98,11 +101,12 @@ function stillFrames(info, opt) {
   return info.holds.map((h, i) => [`${i}-${h.id}`, h.frame]);
 }
 
+/** Renders a video, or stills; for stills, returns the files written. */
 export async function render(opt) {
   if (!opt.chapter) throw new Error('--chapter is required');
   const session = await openChapter(opt);
   try {
-    if (opt.stills) await toStills(session, opt.stills, stillFrames(session.info, opt));
+    if (opt.stills) return await toStills(session, opt.stills, stillFrames(session.info, opt));
     else await toVideo(session, opt.out ?? `out/${opt.chapter}${opt.format ? `-${opt.format}` : ''}.mp4`);
   } finally {
     await session.close();

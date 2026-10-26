@@ -35,6 +35,7 @@ npm run render          # out/no-issuer.mp4 (1920x1080)
 npm run render:square   # out/no-issuer-square.mp4 (1080x1080)
 npm run stills          # PNG of every beat's hold, both formats, in out/
                         # (out/still-04-no-issuer-0-line.png, out/square-04-...)
+npm run stills -- --pdf # also out/slides.pdf and out/slides-square.pdf, one still per page
 ```
 
 Video and stills need ffmpeg and a Chromium: `--browser=/path`, or
