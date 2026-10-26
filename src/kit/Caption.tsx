@@ -6,8 +6,18 @@ import type { Format } from './format';
 import { useSequenceFade } from './ui';
 import { CAPTION_FADE } from './chapter';
 
-/** One caption line at the top of the stage, for the length of its Sequence. */
-export const Caption: React.FC<{ step?: number; text: string; F: Format; quiet?: boolean }> = ({ step, text, F, quiet }) => {
+/**
+ * One caption line at the top of the stage, for the length of its Sequence.
+ * Three levels: `quiet` (an opening or closing line), plain (a numbered
+ * step), `emphasis` (a principle's line: larger, unnumbered).
+ */
+export const Caption: React.FC<{ step?: number; text: string; F: Format; quiet?: boolean; emphasis?: boolean }> = ({
+  step,
+  text,
+  F,
+  quiet,
+  emphasis,
+}) => {
   const frame = useCurrentFrame();
   const opacity = useSequenceFade(CAPTION_FADE, CAPTION_FADE);
   const rise = interpolate(frame, [0, 10], [8, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
@@ -26,9 +36,9 @@ export const Caption: React.FC<{ step?: number; text: string; F: Format; quiet?:
           opacity,
           transform: `translateY(${rise}px)`,
           fontFamily: FONT,
-          fontSize: F.captionSize,
-          fontWeight: quiet ? 500 : 650,
-          letterSpacing: '-0.01em',
+          fontSize: emphasis ? F.captionSize * 1.5 : F.captionSize,
+          fontWeight: quiet ? 500 : emphasis ? 700 : 650,
+          letterSpacing: emphasis ? '-0.02em' : '-0.01em',
           color: quiet ? C.gray2 : C.white,
           padding: '0 48px',
           textAlign: 'center',
