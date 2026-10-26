@@ -2,7 +2,7 @@ import { CHAPTERS } from '../src/chapters';
 import type { Chapter } from '../src/kit/chapter';
 import { FORMATS } from '../src/kit/format';
 import { f } from '../src/kit/time';
-import { ENCOUNTER_AT } from '../src/chapters/no-issuer';
+import { ENCOUNTER_AT, ENCOUNTER_CLEAR_AT } from '../src/chapters/no-issuer';
 import { DURATION_S as ENCOUNTER_S } from '../src/chapters/encounter/timings';
 
 /**
@@ -29,7 +29,7 @@ export const CLIPS: Clip[] = [
     description: 'The whole encounter with captions: scan, both confirmations, the new contact.',
     chapter: 'no-issuer',
     format: 'landscape',
-    from: ENCOUNTER_AT,
+    from: ENCOUNTER_CLEAR_AT,
     to: ENCOUNTER_AT + ENCOUNTER_S,
     captions: true,
   },
@@ -39,7 +39,7 @@ export const CLIPS: Clip[] = [
     description: 'The whole encounter without text, for cards and social posts.',
     chapter: 'no-issuer',
     format: 'square',
-    from: ENCOUNTER_AT,
+    from: ENCOUNTER_CLEAR_AT,
     to: ENCOUNTER_AT + ENCOUNTER_S,
     captions: false,
   },

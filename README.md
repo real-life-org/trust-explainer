@@ -38,7 +38,7 @@ npm run stills          # PNG of every beat's hold, both formats, in out/
 npm run stills -- --pdf # also out/slides.pdf and out/slides-square.pdf, one still per page
 ```
 
-Video and stills need ffmpeg and a Chromium: `--browser=/path`, or
+Video needs ffmpeg (with libx264); video and stills need a Chromium: `--browser=/path`, or
 `$CHROME_PATH`, or `/usr/bin/chromium`. No browser download is needed.
 
 The site is published with GitHub Pages from `main`
@@ -194,7 +194,7 @@ timeline.
 
 The encounter's beats are in `src/chapters/encounter/index.ts`, animation
 timings in `timings.ts` (seconds on the encounter's own timeline; the
-chapter starts it 5.4 s in). Each step is its own
+chapter starts it after the picture, `PICTURE_S` in `no-issuer/timings.ts`). Each step is its own
 component in `steps/` and runs in its own `<Sequence>` in `Encounter.tsx`.
 Phone motion (the scan arc and the return) is computed from the same
 constants in `layout.ts`, which also holds the code position, the

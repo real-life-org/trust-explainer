@@ -72,7 +72,10 @@ export function beatSpans(chapter: Chapter): BeatSpan[] {
  * A run of slides of one kind inside a chapter: its own scene and beats, in
  * seconds on its own timeline. `joinParts` lays parts end to end.
  * `overlapS` lets the scene run on that long into the next part, after its
- * last hold, so it can fade out under the next scene.
+ * last hold, so it can fade out under the next scene; it must end before
+ * the next part's first hold. In a chapter, the first beat of every part
+ * but the first starts exactly where the part starts (its own `from` is
+ * not used).
  */
 export type Part = { Scene: React.FC; beats: Beat[]; durationS: number; overlapS?: number };
 
@@ -86,6 +89,12 @@ export type Part = { Scene: React.FC; beats: Beat[]; durationS: number; overlapS
 export function joinParts(parts: Part[]): Pick<Chapter, 'Scene' | 'beats' | 'durationS'> {
   const offsets = parts.map((_, i) => parts.slice(0, i).reduce((s, p) => s + p.durationS, 0));
   const durationS = parts.reduce((s, p) => s + p.durationS, 0);
+  parts.forEach((part, i) => {
+    const next = parts[i + 1];
+    if (part.overlapS && next && f(part.overlapS) >= f(next.beats[0].hold)) {
+      throw new Error(`part ${i + 1}: overlap ${part.overlapS}s must end before the next part's first hold (${next.beats[0].hold}s)`);
+    }
+  });
   const beats = parts.flatMap((part, i) =>
     part.beats.map((b, j) => ({
       ...b,

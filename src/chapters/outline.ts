@@ -11,11 +11,12 @@ const BUILT: Partial<Record<PrincipleId, Chapter>> = { 'no-issuer': noIssuer };
  * Every principle in deck order. Entries without a chapter are placeholders:
  * no scene, no beats, and they never reach the slides or the film.
  */
-export const OUTLINE: OutlineEntry[] = (Object.keys(PRINCIPLES) as PrincipleId[]).map((id) => ({
-  id,
-  principle: PRINCIPLES[id],
-  chapter: BUILT[id],
-}));
+export const OUTLINE: OutlineEntry[] = (Object.keys(PRINCIPLES) as PrincipleId[]).map((id) => {
+  const chapter = BUILT[id];
+  // the number is found by chapter id, so a chapter must carry its entry's id
+  if (chapter && chapter.id !== id) throw new Error(`outline ${id}: its chapter has id ${chapter.id}`);
+  return { id, principle: PRINCIPLES[id], chapter };
+});
 
 /** A principle's number from its place in the outline, two digits: "04". */
 export function principleNumber(id: string): string | undefined {

@@ -2,8 +2,8 @@
 // uses: a headless Chromium draws web/frame.html frame by frame, ffmpeg
 // encodes the screenshots.
 //
-//   node scripts/render.mjs --chapter encounter [--format square] --out out/encounter.mp4
-//   node scripts/render.mjs --chapter encounter --stills out/still   (one PNG per beat hold)
+//   node scripts/render.mjs --chapter no-issuer [--format square] --out out/no-issuer.mp4
+//   node scripts/render.mjs --chapter no-issuer --stills out/still   (one PNG per beat hold)
 //   node scripts/render.mjs ... --frames 0,90,180 --stills out/x       (chosen frames)
 //   node scripts/render.mjs ... --every 6 --stills out/seq/f          (every nth frame)
 //
@@ -43,6 +43,11 @@ export async function openChapter({ chapter, format = '', browser: browserOpt })
   await probe.goto(url);
   const info = await probe.evaluate(() => window.__frame.info);
   await probe.close();
+  if (chapter && !info.chapters.some((c) => c.id === chapter)) {
+    await browser.close();
+    await server.close();
+    throw new Error(`unknown chapter "${chapter}"; chapters: ${info.chapters.map((c) => c.id).join(', ')}`);
+  }
   const page = await browser.newPage({ viewport: { width: info.width, height: info.height }, deviceScaleFactor: 1 });
   page.on('pageerror', (e) => console.error('page error:', e.message));
   await page.goto(url);

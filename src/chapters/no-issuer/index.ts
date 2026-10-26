@@ -22,6 +22,8 @@ const PARTS: Part[] = [picturePart, encounterPart];
 
 /** Seconds on the chapter's timeline where the encounter starts (clips are cut from here on). */
 export const ENCOUNTER_AT = PARTS.slice(0, PARTS.indexOf(encounterPart)).reduce((s, p) => s + p.durationS, 0);
+/** Where the encounter is clear of the picture fading out (looping clips start here). */
+export const ENCOUNTER_CLEAR_AT = ENCOUNTER_AT + (PARTS[PARTS.indexOf(encounterPart) - 1]?.overlapS ?? 0);
 /** Index of the encounter's first beat in the chapter (old `#encounter/k` links land on k + this). */
 export const ENCOUNTER_BEAT = PARTS.slice(0, PARTS.indexOf(encounterPart)).reduce((n, p) => n + p.beats.length, 0);
 
