@@ -8,6 +8,7 @@ import { Icon } from '../src/kit/Icons';
 import { C, FONT } from '../src/kit/theme';
 import { FPS } from '../src/kit/time';
 import { ChapterView } from './ChapterView';
+import { ContrastPanel } from './ContrastPanel';
 import { mount, Page } from './Page';
 import { type Pos, stopsOf } from './stops';
 import { Button } from './ui';
@@ -39,12 +40,19 @@ function readHash(): Pos {
  * next while a step still plays finishes it at once; back and a click in
  * the strip jump without playing. Present shows the same stage in
  * fullscreen; Esc returns to this view on the same slide. The clock runs at
- * display rate. The current slide is kept in the URL hash.
+ * display rate. The current slide is kept in the URL hash. A chapter whose
+ * principle has a `contrast` gets a tab at the bottom of the stage; it (or
+ * C) opens a panel comparing it with OpenVTC, Esc or C closes it, and so
+ * does every change of slide. While it is open in the presentation, Esc
+ * closes the panel first and leaves the presentation only on the next press.
  */
 const SlidesPage: React.FC = () => {
   const [pos, setPos] = useState<Pos>(readHash);
   const [frame, setFrame] = useState(() => holdOf(readHash()));
   const [fullscreen, setFullscreen] = useState(false);
+  const [contrast, setContrast] = useState(false);
+  const contrastRef = useRef(contrast);
+  contrastRef.current = contrast;
   const stage = useRef<HTMLDivElement>(null);
   const posRef = useRef(pos);
   const frameRef = useRef(frame);
@@ -104,7 +112,14 @@ const SlidesPage: React.FC = () => {
       const i = indexOf(posRef.current);
       jump(SLIDES[Math.max(0, i - 1)]);
     };
-    const present = () => void stage.current?.requestFullscreen().catch(() => undefined);
+    // Keyboard Lock (Chromium) lets Esc reach the page in fullscreen, so that
+    // it can close the panel first; holding Esc still leaves fullscreen.
+    // Elsewhere the browser keeps Esc and leaves fullscreen at once.
+    const present = () =>
+      void stage.current
+        ?.requestFullscreen()
+        .then(() => keyboardOf(navigator)?.lock(['Escape']))
+        .catch(() => undefined);
     return { jump, next, back, present, stop };
   }, []);
 
@@ -136,13 +151,27 @@ const SlidesPage: React.FC = () => {
           if (document.fullscreenElement) void document.exitFullscreen();
           else controls.present();
           break;
+        case 'c':
+        case 'C':
+          if (!CHAPTERS[posRef.current.c].principle?.contrast) return;
+          setContrast((open) => !open);
+          break;
+        case 'Escape':
+          if (contrastRef.current) setContrast(false);
+          else if (document.fullscreenElement) void document.exitFullscreen();
+          else return;
+          break;
         default:
           return;
       }
       e.preventDefault();
     };
     const onHash = () => controls.jump(readHash());
-    const onFullscreen = () => setFullscreen(document.fullscreenElement === stage.current);
+    const onFullscreen = () => {
+      const on = document.fullscreenElement === stage.current;
+      setFullscreen(on);
+      if (!on) keyboardOf(navigator)?.unlock();
+    };
     window.addEventListener('keydown', onKey);
     window.addEventListener('hashchange', onHash);
     document.addEventListener('fullscreenchange', onFullscreen);
@@ -154,8 +183,12 @@ const SlidesPage: React.FC = () => {
     };
   }, [controls]);
 
+  // every change of slide closes the panel
+  useEffect(() => setContrast(false), [pos.c, pos.k]);
+
   const chapter = CHAPTERS[pos.c];
   const index = indexOf(pos);
+  const contrastText = chapter.principle?.contrast;
   return (
     <div className="slides" style={{ flex: 1, minHeight: 0, display: 'flex' }}>
       <Strip current={pos} onPick={controls.jump} />
@@ -172,9 +205,11 @@ const SlidesPage: React.FC = () => {
             background: C.bg,
             boxShadow: fullscreen ? 'none' : `0 0 0 1px ${C.gray5}`,
             cursor: 'pointer',
+            containerType: 'size',
           }}
         >
           <ChapterView chapter={chapter} size={SIZE} frame={frame} fit />
+          {contrastText ? <ContrastPanel text={contrastText} open={contrast} onToggle={() => setContrast((o) => !o)} /> : null}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 650, color: C.gray3 }}>
@@ -183,7 +218,7 @@ const SlidesPage: React.FC = () => {
           <span style={{ fontSize: 14, color: C.gray4 }}>
             Slide {index + 1} of {SLIDES.length}
           </span>
-          <span style={{ marginLeft: 'auto', fontSize: 13, color: C.gray4 }}>← → step · P present · Esc leave</span>
+          <span style={{ marginLeft: 'auto', fontSize: 13, color: C.gray4 }}>← → step · P present{contrastText ? ' · C compare' : ''} · Esc leave</span>
           <Button onClick={controls.back} title="previous slide">
             <Icon name="chevronLeft" size={16} color={C.gray2} />
           </Button>
@@ -261,6 +296,10 @@ const Strip: React.FC<{ current: Pos; onPick: (p: Pos) => void }> = ({ current, 
     </div>
   );
 };
+
+/** The Keyboard Lock API, where the browser has it (not in TypeScript's DOM types). */
+type KeyboardLock = { lock: (keys: string[]) => Promise<void>; unlock: () => void };
+const keyboardOf = (n: Navigator) => (n as Navigator & { keyboard?: KeyboardLock }).keyboard;
 
 mount(
   <Page active="slides" fill>

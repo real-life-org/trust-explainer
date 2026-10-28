@@ -72,12 +72,26 @@ same slide. The clock runs at display rate.
 | ← ↑ Backspace PageUp, shift-click | previous slide |
 | Home / End | first / last slide |
 | P, F5, F | present (again: leave) |
-| Esc | leave the presentation |
+| C, click on the tab | open or close the OpenVTC comparison |
+| Esc | close the comparison, else leave the presentation |
 
 The current slide is kept in the URL (`#no-issuer/2`: chapter and beat, 0
 is the first beat), so a reload or a shared link opens the same slide.
 Older links to the encounter (`#encounter/2`) open the same slide inside
 chapter 04.
+
+## Elsewhere in the ecosystem
+
+A principle can carry `contrast` (`src/chapters/principles.ts`): a few
+sentences on how OpenVTC answers the same question. On the slides page,
+and only there, such a chapter shows a tab at the bottom of the stage,
+"Elsewhere in the ecosystem". The tab or C slides a panel up over the
+lower part of the stage, "Compared with OpenVTC"; the tab, C or Esc close
+it, and every change of slide does too. It is page UI, not part of a
+scene: the video, clips, stills and the frame export never show it, and
+the timeline is unchanged. While presenting, Esc first closes the panel
+and leaves the presentation on the next press; this needs the Keyboard
+Lock API (Chromium), elsewhere Esc leaves fullscreen at once.
 
 ## Animations for websites
 
@@ -134,7 +148,7 @@ src/
     fonts.ts           loads the bundled fonts
     Phone.tsx, CredentialCard.tsx, QrCode.tsx, Icons.tsx, ui.tsx
   chapters/
-    principles.ts      the eleven principles of the deck: title, line, body, notes
+    principles.ts      the eleven principles of the deck: title, line, body, notes, contrast
     outline.ts         the principles in deck order, with their chapters once built
     index.ts           all built chapters in telling order
     no-issuer/         chapter 04 "No issuer": the picture, then the encounter
@@ -142,6 +156,7 @@ src/
 web/
   Page.tsx, ui.tsx           page frame with the top bar, small UI pieces
   index.html, SlidesPage.tsx the slides: strip, stage, presenting
+  ContrastPanel.tsx          the OpenVTC comparison on the slides stage
   stops.ts                   where each slide holds
   video.html, VideoPage.tsx  the film player
   film.ts                    all chapters as one film
