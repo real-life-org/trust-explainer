@@ -30,8 +30,10 @@ export type Beat = {
  * A principle of the Real Life Trust Protocol, as on its slide in the deck
  * "RLTP Core Principles": `title` is the kicker, `line` the leading
  * sentence, `body` the few sentences under it, `notes` what to say.
+ * `contrast` says how OpenVTC answers the same question; the slides page
+ * shows it in a panel on request, never the video, clips or stills.
  */
-export type Principle = { title: string; line: string; body: string; notes?: string };
+export type Principle = { title: string; line: string; body: string; notes?: string; contrast?: string };
 
 /**
  * A chapter of the explainer: one scene, its beats, and the line in the top
