@@ -80,6 +80,12 @@ const GROUPS = [
   { cx: 535, cy: 250, rx: 135, ry: 125 },
 ];
 
+/** Where Ana and Ben stand in the finished network, on the stage (chapter 07 starts from here). */
+export function useNetworkPeople(): { A: Pt; B: Pt; r: number } {
+  const M = useMap();
+  return { A: M.at(NODES[ANA]), B: M.at(NODES[BEN]), r: 17 * M.s };
+}
+
 function useMap() {
   const F = useFormat();
   const m = F.square ? { x: 51, y: 330, s: 1.3 } : { x: 377, y: 262, s: 1.55 };

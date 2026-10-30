@@ -78,6 +78,13 @@ const listSlot = (() => {
 /** rays reach out in turn, around the centre */
 const angle = (c: Pt, p: Pt) => Math.atan2(p[1] - c[1], p[0] - c[0]);
 
+/** Where Ana's and Ben's star centres stand on the stage when the chapter's stars begin, and their radius. */
+export function useStarCentres(): { A: Pt; B: Pt; r: number } {
+  const box = useBox();
+  const at = (p: Pt): Pt => [box.x + p[0] * box.s, box.y + p[1] * box.s];
+  return { A: at([ANA[0] - APART, ANA[1]]), B: at([BEN[0] + APART, BEN[1]]), r: 21 * box.s };
+}
+
 /** Where the 400 × 300 drawing stands on the stage. */
 function useBox(): { x: number; y: number; s: number } {
   const F = useFormat();
@@ -159,8 +166,9 @@ export const OverlaidStars: React.FC = () => {
     });
   };
 
-  const anaHub = prog(frame, T.anaHub) * (1 - dissolve);
-  const benHub = prog(frame, T.benHub) * (1 - dissolve);
+  // both centres stand from the first frame: they arrive from chapter 03's network
+  const anaHub = 1 - dissolve;
+  const benHub = 1 - dissolve;
   const hub = (c: Pt, t: number, who: 'A' | 'B') =>
     t > 0 ? (
       <g transform={`translate(${c[0]} ${c[1]}) scale(${0.7 + 0.3 * t})`} opacity={t}>

@@ -6,6 +6,7 @@ import { ENCOUNTER_AT, ENCOUNTER_CLEAR_AT } from '../src/chapters/relationship';
 import { DURATION_S as IDENTITY_S } from '../src/chapters/identity/timings';
 import { DURATION_S as PERSON_S } from '../src/chapters/person/timings';
 import { DURATION_S as STARS_S } from '../src/chapters/relational-reading/timings';
+import { FROM_NETWORK_S } from '../src/chapters/relational-reading/FromNetwork';
 import { DURATION_S as ENCOUNTER_S } from '../src/chapters/encounter/timings';
 
 /**
@@ -102,8 +103,8 @@ export const CLIPS: Clip[] = [
     description: 'Two stars laid on top of each other; what they share becomes two lists, contacts and groups in common.',
     chapter: 'relational-reading',
     format: 'landscape',
-    from: 0,
-    to: STARS_S,
+    from: FROM_NETWORK_S,
+    to: FROM_NETWORK_S + STARS_S,
     captions: true,
   },
 ];
