@@ -6,7 +6,7 @@ import { PICTURE_OVERLAP_S, PICTURE_S } from './timings';
 
 const principle = PRINCIPLES['relationship'];
 
-/** From chapter 02's person to two points, then two phones. */
+/** From chapter 02's person to two points; the points grow into the encounter's phones as it starts. */
 const picturePart: Part = {
   Scene: PersonToPoints,
   durationS: PICTURE_S,
@@ -14,7 +14,6 @@ const picturePart: Part = {
   beats: [
     { id: 'line', from: 0.3, hold: 1.75, caption: principle.line, emphasis: true, notes: principle.body },
     { id: 'ben', from: 2.1, hold: 2.85, caption: 'Ana meets Ben' },
-    { id: 'phones', from: 3.2, hold: 4.4, caption: 'Each holds a phone' },
   ],
 };
 

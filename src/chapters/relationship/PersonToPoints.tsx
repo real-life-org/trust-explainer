@@ -5,6 +5,7 @@ import { PEOPLE } from '../../kit/cast';
 import { FONT } from '../../kit/theme';
 import { clamp, f } from '../../kit/time';
 import { useLayout } from '../encounter/layout';
+import { Background } from '../../kit/stage';
 import { useBox, easeInOut, lerp, part, prog } from '../identity/shared';
 import { DocumentToDevices } from '../person/DocumentToDevices';
 import { CENTER_SHIFT, DURATION_S as PERSON_S } from '../person/timings';
@@ -71,6 +72,8 @@ export const PersonToPoints: React.FC = () => {
 
   return (
     <div style={{ position: 'absolute', inset: 0, opacity: out }}>
+      {/* its own stage, so the encounter rising underneath stays hidden until the hand-over */}
+      <Background />
       {/* chapter 02's last picture, contracting toward the middle of the person */}
       {scale > 0.001 ? (
         <div

@@ -2,7 +2,7 @@
  * Timings of the opening picture of chapter 03, in seconds on that part's
  * own timeline. Each step ends before its beat's hold (index.ts).
  */
-export const PICTURE_S = 4.8;
+export const PICTURE_S = 3.2;
 
 /**
  * The picture ends on the encounter's own opening frame and stays on until
@@ -23,8 +23,8 @@ export const P = {
   /** a second point: Ben */
   benDot: { from: 2.2, to: 2.7 },
 
-  /** both points become phones */
-  phones: { from: 3.3, to: 4.3 },
+  /** both points become phones, already inside the encounter's first step */
+  phones: { from: 3.25, to: 4.1 },
 
   /** hands over to the encounter once it shows the same frame */
   out: { from: PICTURE_S + PICTURE_OVERLAP_S - 0.1, to: PICTURE_S + PICTURE_OVERLAP_S },
