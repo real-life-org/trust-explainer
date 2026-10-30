@@ -2,7 +2,7 @@ import React from 'react';
 import { Timeline, useCurrentFrame, useVideoConfig } from '../../kit/timeline';
 import { interpolate } from '../../kit/motion';
 import { PEOPLE } from '../../kit/cast';
-import { FONT } from '../../kit/theme';
+import { C, FONT } from '../../kit/theme';
 import { clamp, f } from '../../kit/time';
 import { useLayout } from '../encounter/layout';
 import { Background } from '../../kit/stage';
@@ -60,11 +60,12 @@ export const PersonToPoints: React.FC = () => {
       </div>
     ) : null;
   };
+  /** a person as the centre of a star, as in chapters 01 and 07: their colour, their name inside */
   const dot = (c: { x: number; y: number }, t: number, who: 'A' | 'B') =>
     t > 0 ? (
-      <g opacity={t * (1 - part(phones, 0, 0.5))}>
-        <circle cx={c.x} cy={c.y} r={24} fill={PEOPLE[who].tone.stage} />
-        <text x={c.x} y={c.y + 70} textAnchor="middle" fontFamily={FONT} fontSize={34} fontWeight={600} fill={PEOPLE[who].tone.stage}>
+      <g opacity={t * (1 - part(phones, 0, 0.5))} transform={`translate(${c.x} ${c.y}) scale(${0.7 + 0.3 * t})`}>
+        <circle r={57} fill={PEOPLE[who].tone.stage} />
+        <text y={12} textAnchor="middle" fontFamily={FONT} fontSize={34} fontWeight={700} fill={C.bg}>
           {PEOPLE[who].name}
         </text>
       </g>
