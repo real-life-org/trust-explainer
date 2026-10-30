@@ -2,15 +2,15 @@ import React from 'react';
 import { Timeline, useCurrentFrame, useVideoConfig } from '../../kit/timeline';
 import { interpolate } from '../../kit/motion';
 import { PEOPLE } from '../../kit/cast';
-import { PHONE } from '../../kit/geometry';
-import { C } from '../../kit/theme';
+import { FONT } from '../../kit/theme';
 import { clamp, f } from '../../kit/time';
 import { useLayout } from '../encounter/layout';
 import { useBox, easeInOut, lerp, part, prog } from '../identity/shared';
 import { DocumentToDevices } from '../person/DocumentToDevices';
 import { DURATION_S as PERSON_S } from '../person/timings';
+import { Encounter } from '../encounter/Encounter';
 
-import { P } from './timings';
+import { ENCOUNTER_REST_S, P } from './timings';
 
 /** the centre of Ana's region in chapter 02, in that drawing's box units */
 const REGION_C = { x: 202, y: 212 };
@@ -37,21 +37,37 @@ export const PersonToPoints: React.FC = () => {
   const rc = { x: box.x + REGION_C.x * box.s, y: box.y + REGION_C.y * box.s };
   const scale = 1 - contract;
 
-  const pw = PHONE.w * L.s;
-  const ph = PHONE.h * L.s;
-  const shape = (c: { x: number; y: number }, t: number, fill: string) => {
-    const r = 22;
-    const w = lerp(2 * r, pw, phones);
-    const h = lerp(2 * r, ph, phones);
-    const rx = lerp(r, PHONE.radius * L.s, phones);
-    return t > 0 ? (
-      <g opacity={t}>
-        <rect x={c.x - w / 2} y={c.y - h / 2} width={w} height={h} rx={rx} fill={phones > 0 ? C.shell : fill} stroke={C.rim} strokeWidth={phones * 4} />
-        {/* the person's colour stays as the dot shrinks into the phone */}
-        <circle cx={c.x} cy={c.y} r={r * (1 - phones)} fill={fill} />
-      </g>
+  /** the encounter at rest, both codes showing: what each point grows into */
+  const restFrame = f(ENCOUNTER_REST_S);
+  const half = (who: 'A' | 'B', t: number) => {
+    const home = L.home[who];
+    const g = phones;
+    return t > 0 && g > 0 ? (
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          clipPath: who === 'A' ? 'inset(0 50% 0 0)' : 'inset(0 0 0 50%)',
+          transformOrigin: `${home.x}px ${home.y}px`,
+          transform: `scale(${lerp(0.06, 1, g)})`,
+          opacity: part(g, 0, 0.35),
+        }}
+      >
+        <Timeline {...cfg} frame={restFrame}>
+          <Encounter />
+        </Timeline>
+      </div>
     ) : null;
   };
+  const dot = (c: { x: number; y: number }, t: number, who: 'A' | 'B') =>
+    t > 0 ? (
+      <g opacity={t * (1 - part(phones, 0, 0.5))}>
+        <circle cx={c.x} cy={c.y} r={24} fill={PEOPLE[who].tone.stage} />
+        <text x={c.x} y={c.y + 70} textAnchor="middle" fontFamily={FONT} fontSize={34} fontWeight={600} fill={PEOPLE[who].tone.stage}>
+          {PEOPLE[who].name}
+        </text>
+      </g>
+    ) : null;
 
   return (
     <div style={{ position: 'absolute', inset: 0, opacity: out }}>
@@ -73,9 +89,11 @@ export const PersonToPoints: React.FC = () => {
         </div>
       ) : null}
       <svg width={cfg.width} height={cfg.height} style={{ position: 'absolute', left: 0, top: 0 }}>
-        {shape(L.home.A, anaDot, PEOPLE.A.tone.stage)}
-        {shape(L.home.B, benDot, PEOPLE.B.tone.stage)}
+        {dot(L.home.A, anaDot, 'A')}
+        {dot(L.home.B, benDot, 'B')}
       </svg>
+      {half('A', anaDot)}
+      {half('B', benDot)}
     </div>
   );
 };

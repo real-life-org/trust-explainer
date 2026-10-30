@@ -112,6 +112,8 @@ export function joinParts(parts: Part[]): Pick<Chapter, 'Scene' | 'beats' | 'dur
           name={`part ${i + 1}`}
           from={f(offsets[i])}
           durationInFrames={Math.min(f(part.durationS + (part.overlapS ?? 0)), f(durationS) - f(offsets[i]))}
+          // each part is its own stacking context; a part that runs on into the next one stays on top while it hands over
+          style={{ zIndex: parts.length - i }}
         >
           <part.Scene />
         </Sequence>

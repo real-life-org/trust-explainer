@@ -4,8 +4,14 @@
  */
 export const PICTURE_S = 4.8;
 
-/** how long the picture stays on into the encounter, under the phones */
-export const PICTURE_OVERLAP_S = 0.25;
+/**
+ * The picture ends on the encounter's own opening frame and stays on until
+ * the encounter has risen into that same frame, so the hand-over is invisible.
+ */
+export const PICTURE_OVERLAP_S = 1.1;
+
+/** the moment of the encounter, on its own timeline, the phones grow into: at rest, both codes showing */
+export const ENCOUNTER_REST_S = 1.2;
 
 export const P = {
   /** the person (end of chapter 02) contracts to one point */
@@ -20,6 +26,6 @@ export const P = {
   /** both points become phones */
   phones: { from: 3.3, to: 4.3 },
 
-  /** fades under the encounter's phones */
-  out: { from: PICTURE_S, to: PICTURE_S + PICTURE_OVERLAP_S },
+  /** hands over to the encounter once it shows the same frame */
+  out: { from: PICTURE_S + PICTURE_OVERLAP_S - 0.1, to: PICTURE_S + PICTURE_OVERLAP_S },
 } as const;
