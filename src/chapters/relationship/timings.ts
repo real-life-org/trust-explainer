@@ -31,7 +31,7 @@ export const P = {
 } as const;
 
 /** Timings of the closing part of chapter 03, on that part's own timeline. */
-export const NETWORK_S = 7.9;
+export const NETWORK_S = 8.5;
 
 export const N = {
   /** the phones, as the encounter left them, contract into two points */
@@ -43,11 +43,11 @@ export const N = {
   link: { from: 2.1, to: 2.6 },
 
   /** the network spreads outward from the two */
-  /** waves outward from Ana and Ben; only the start counts here, Network.tsx schedules each link from it */
-  grow: { from: 3.3, to: 5.6 },
+  /** outward from Ana and Ben, nearest first; only the start counts here, Network.tsx schedules each ray and link from it */
+  grow: { from: 3.3, to: 6.4 },
 
   /** where links grow dense, groups appear */
-  groups: { from: 6.4, to: 7.1 },
+  groups: { from: 7.0, to: 7.7 },
 } as const;
 
 /** the moment of the encounter, on its own timeline, the closing part starts from: both contacts made */

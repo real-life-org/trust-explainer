@@ -20,8 +20,10 @@ explain it. Built so far, and told as one movement from 01 to 03:
   scans Ana's phone over phone, both confirm, each signs an ed25519
   encounter credential for the other, and each credential becomes the new
   contact.
-- 07 "Relational reading": Ana's and Ben's stars stand apart, then Ben lays
-  his over hers; what they share becomes two lists, contacts and groups.
+- 07 "Relational reading": chapter 03's network falls apart into Ana's
+  star and Ben's star; Ben lays his over hers, and what they share becomes
+  two lists, contacts and groups. Both chapters draw the same network
+  (`relational-reading/graph.tsx`).
 The other principles are in the outline, without scenes yet.
 
 The look follows the ceremony simulator in
@@ -241,8 +243,8 @@ Times in seconds on the chapter's timeline:
 | 4 Second confirmation | 13.4 to 17.3 | 16.9 | Ana's credential docked on Ben's phone, both phones show "Connected" |
 | 5 Contacts | 17.3 to 20.3 | 19.3 | both credentials became the new contact, Ana's first, then Ben's |
 | 6 Connected | 20.3 to 23.5 | 23.2 | the phones contracted into Ana and Ben, linked inside the network |
-| 7 Network | 23.5 to 26.6 | 26.3 | the network spreads outward from Ana and Ben in waves; nobody moves once there |
-| 8 Groups | 26.6 to 28.2 | 27.7 | the two groups where links are dense, a pair at the edge |
+| 7 Network | 23.5 to 27.2 | 26.9 | the network spreads outward from Ana and Ben, nearest first; nobody moves once there |
+| 8 Groups | 27.2 to 28.8 | 28.3 | the two groups where links are dense, a pair at the edge |
 
 Names and keys are illustration, as on the site.
 
