@@ -1,11 +1,12 @@
 import type { Chapter, Principle } from '../kit/chapter';
 import { PRINCIPLES, type PrincipleId } from './principles';
 import { noIssuer } from './no-issuer';
+import { relationalReading } from './relational-reading';
 
 /** One principle of the deck and, once it is built, its chapter. */
 export type OutlineEntry = { id: PrincipleId; principle: Principle; chapter?: Chapter };
 
-const BUILT: Partial<Record<PrincipleId, Chapter>> = { 'no-issuer': noIssuer };
+const BUILT: Partial<Record<PrincipleId, Chapter>> = { 'no-issuer': noIssuer, 'relational-reading': relationalReading };
 
 /**
  * Every principle in deck order. Entries without a chapter are placeholders:
