@@ -1,8 +1,9 @@
 import { joinParts, type Chapter, type Part } from '../../kit/chapter';
 import { encounterPart } from '../encounter';
 import { PRINCIPLES } from '../principles';
+import { Network } from './Network';
 import { PersonToPoints } from './PersonToPoints';
-import { PICTURE_OVERLAP_S, PICTURE_S } from './timings';
+import { NETWORK_S, PICTURE_OVERLAP_S, PICTURE_S } from './timings';
 
 const principle = PRINCIPLES['relationship'];
 
@@ -17,7 +18,18 @@ const picturePart: Part = {
   ],
 };
 
-const PARTS: Part[] = [picturePart, encounterPart];
+/** After the meeting: the phones become two points again, and the network grows around them. */
+const networkPart: Part = {
+  Scene: Network,
+  durationS: NETWORK_S,
+  beats: [
+    { id: 'pair', from: 0, hold: 2.9, caption: 'Now Ana and Ben are connected' },
+    { id: 'network', from: 3.2, hold: 5.9, caption: 'Pair by pair, others meet' },
+    { id: 'groups', from: 6.2, hold: 7.3, caption: 'Where links grow dense, groups appear', notes: principle.notes },
+  ],
+};
+
+const PARTS: Part[] = [picturePart, encounterPart, networkPart];
 
 /** Seconds on the chapter's timeline where the encounter starts (clips are cut from here on). */
 export const ENCOUNTER_AT = PARTS.slice(0, PARTS.indexOf(encounterPart)).reduce((s, p) => s + p.durationS, 0);

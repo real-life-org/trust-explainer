@@ -53,7 +53,7 @@ export const CLIPS: Clip[] = [
     chapter: 'relationship',
     format: 'square',
     from: ENCOUNTER_AT + 1.6,
-    to: ENCOUNTER_AT + 8.0,
+    to: ENCOUNTER_AT + 6.4,
     captions: false,
   },
   {
@@ -62,7 +62,7 @@ export const CLIPS: Clip[] = [
     description: 'Both signed credentials jump into the contact list, first on Ana’s phone, then on Ben’s.',
     chapter: 'relationship',
     format: 'landscape',
-    from: ENCOUNTER_AT + 14.8,
+    from: ENCOUNTER_AT + 13.2,
     to: ENCOUNTER_AT + ENCOUNTER_S,
     captions: false,
   },

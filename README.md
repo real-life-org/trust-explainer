@@ -212,11 +212,13 @@ first part), and set it on its entry in `src/chapters/outline.ts`.
 
 ## Chapter 03: Relationship
 
-Two parts. The picture (`src/chapters/relationship/`) starts on chapter
+Three parts. The picture (`src/chapters/relationship/`) starts on chapter
 02's last frame, drawn by chapter 02's own scene held at its end: the person
 contracts to a point, Ben's point appears, and both grow into the phones the
 encounter starts from. Its timings are in `relationship/timings.ts`. Then
-the encounter, on its own timeline.
+the encounter, on its own timeline. Last the network (`Network.tsx`): it
+starts on the encounter's last frame, the phones contract into Ana and Ben,
+and pair by pair the network of the deck slide grows around them.
 
 The encounter's beats are in `src/chapters/encounter/index.ts`, animation
 timings in `timings.ts` (seconds on the encounter's own timeline; the
@@ -231,14 +233,16 @@ Times in seconds on the chapter's timeline:
 
 | Beat | Runs | Hold | Ends with |
 |---|---|---|---|
-| Line | 0.3 to 1.8 | 1.4 | "Trust is made, not granted." over both empty panels |
-| 1 Issued | 1.8 to 3.4 | 3.0 | the issuer, its spokes, the people on them, the label |
-| 2 Made | 3.4 to 5.4 | 4.8 | the people, the links between pairs, the label |
-| Start | 5.4 to 7.0 | 6.6 | the picture faded out, both phones show their code |
-| 3 Scan | 7.0 to 13.4 | 13.1 | code recognized, phones home, confirmation on Ben's phone |
-| 4 First confirmation | 13.4 to 17.2 | 16.8 | Ben's credential docked on Ana's phone, confirmation on Ana's phone |
-| 5 Second confirmation | 17.2 to 21.1 | 20.7 | Ana's credential docked on Ben's phone, both phones show "Connected" |
-| 6 Contacts | 21.1 to 24.1 | 23.1 | both credentials became the new contact, Ana's first, then Ben's |
+| Line | 0.3 to 2.1 | 1.75 | the person of chapter 02 shrunk onto Ana's point |
+| 1 Ana meets Ben | 2.1 to 3.2 | 2.85 | Ana and Ben as two points |
+| Start | 3.2 to 4.8 | 4.4 | the points grown into the app, both phones show their code |
+| 2 Scan | 4.8 to 9.6 | 9.3 | code recognized, phones home, confirmation on Ben's phone |
+| 3 First confirmation | 9.6 to 13.4 | 13.0 | Ben's credential docked on Ana's phone, confirmation on Ana's phone |
+| 4 Second confirmation | 13.4 to 17.3 | 16.9 | Ana's credential docked on Ben's phone, both phones show "Connected" |
+| 5 Contacts | 17.3 to 20.3 | 19.3 | both credentials became the new contact, Ana's first, then Ben's |
+| 6 Connected | 20.3 to 23.5 | 23.2 | the phones contracted into Ana and Ben, linked inside the network |
+| 7 Network | 23.5 to 26.5 | 26.2 | pair by pair, the network around them |
+| 8 Groups | 26.5 to 28.1 | 27.6 | the two groups where links are dense, a pair at the edge |
 
 Names and keys are illustration, as on the site.
 

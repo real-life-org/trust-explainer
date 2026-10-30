@@ -12,9 +12,9 @@ export const encounterPart: Part = {
   durationS: DURATION_S,
   beats: [
     { id: 'start', from: 0.3, hold: 1.2, caption: 'Ana and Ben meet. Each phone shows its code.', quiet: true },
-    { id: 'scan', from: 1.6, hold: 7.7, caption: "Ben scans Ana's code, phone over phone" },
-    { id: 'confirm', from: 8.0, hold: 11.4, caption: 'Ben confirms it is Ana and signs a credential for her' },
-    { id: 'confirm-back', from: 11.8, hold: 15.3, caption: 'Ana confirms Ben back and signs one for him' },
-    { id: 'contacts', from: 15.7, hold: 17.7, caption: 'The credentials become contacts on both phones' },
+    { id: 'scan', from: 1.6, hold: 6.1, caption: "Ben scans Ana's code, phone over phone" },
+    { id: 'confirm', from: 6.4, hold: 9.8, caption: 'Ben confirms it is Ana and signs a credential for her' },
+    { id: 'confirm-back', from: 10.2, hold: 13.7, caption: 'Ana confirms Ben back and signs one for him' },
+    { id: 'contacts', from: 14.1, hold: 16.1, caption: 'The credentials become contacts on both phones' },
   ],
 };

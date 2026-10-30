@@ -29,3 +29,25 @@ export const P = {
   /** hands over to the encounter once it shows the same frame */
   out: { from: PICTURE_S + PICTURE_OVERLAP_S - 0.1, to: PICTURE_S + PICTURE_OVERLAP_S },
 } as const;
+
+/** Timings of the closing part of chapter 03, on that part's own timeline. */
+export const NETWORK_S = 7.8;
+
+export const N = {
+  /** the phones, as the encounter left them, contract into two points */
+  contract: { from: 0.2, to: 1.1 },
+  dots: { from: 0.8, to: 1.2 },
+
+  /** the two become a linked pair inside the network */
+  move: { from: 1.4, to: 2.3 },
+  link: { from: 2.1, to: 2.6 },
+
+  /** pair by pair, others meet: the network grows */
+  grow: { from: 3.3, to: 5.6 },
+
+  /** where links grow dense, groups appear */
+  groups: { from: 6.3, to: 7.0 },
+} as const;
+
+/** the moment of the encounter, on its own timeline, the closing part starts from: both contacts made */
+export const ENCOUNTER_END_S = 16.1;
