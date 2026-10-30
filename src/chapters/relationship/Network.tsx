@@ -4,7 +4,8 @@ import { PEOPLE } from '../../kit/cast';
 import { useFormat } from '../../kit/format';
 import { Background } from '../../kit/stage';
 import { C, FONT } from '../../kit/theme';
-import { f } from '../../kit/time';
+import { clamp, f } from '../../kit/time';
+import { interpolate } from '../../kit/motion';
 import { Encounter } from '../encounter/Encounter';
 import { useLayout } from '../encounter/layout';
 import { easeInOut, lerp, part, prog, stagger } from '../identity/shared';
@@ -26,6 +27,21 @@ const LINKS: Array<[number, number]> = [
   [0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [0, 2], [1, 3], [1, 4], [0, 3],
   [3, 11], [11, 5], [5, 6], [6, 7], [7, 11], [11, 6], [5, 7], [7, 8], [9, 10],
 ];
+/** the encounters after Ana and Ben's, outward from the two of them; the pair at the edge meets last */
+const GROW: Array<[number, number]> = (() => {
+  const rest = LINKS.filter(([a, b]) => !((a === ANA && b === BEN) || (a === BEN && b === ANA)));
+  const seen = new Set([ANA, BEN]);
+  const out: Array<[number, number]> = [];
+  while (rest.length) {
+    const i = rest.findIndex(([a, b]) => seen.has(a) || seen.has(b));
+    const [l] = rest.splice(i < 0 ? 0 : i, 1);
+    out.push(l);
+    seen.add(l[0]);
+    seen.add(l[1]);
+  }
+  return out;
+})();
+
 const GROUPS = [
   { cx: 290, cy: 225, rx: 175, ry: 150 },
   { cx: 535, cy: 250, rx: 135, ry: 125 },
@@ -95,15 +111,9 @@ export const Network: React.FC = () => {
   };
 
   const others = NODES.map((_, i) => i).filter((i) => i !== ANA && i !== BEN);
-  const order = new Map<number, number>();
-  // links and people appear in the order of the links list, skipping the pair that already met
-  let k = 0;
-  LINKS.forEach(([a, b]) => {
-    [a, b].forEach((n) => {
-      if (n !== ANA && n !== BEN && !order.has(n)) order.set(n, k++);
-    });
-  });
-  const growLinks = LINKS.filter(([a, b]) => !((a === ANA && b === BEN) || (a === BEN && b === ANA)));
+  // the first encounter each other person takes part in: that is when they pop up
+  const firstLink = new Map<number, number>();
+  GROW.forEach(([a, b], i) => [a, b].forEach((n) => { if (!firstLink.has(n)) firstLink.set(n, i); }));
 
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
@@ -122,13 +132,38 @@ export const Network: React.FC = () => {
           <text x={M.at([40, 0])[0]} y={M.at([0, 480])[1]} fontFamily={FONT} fontSize={24} fill={C.gray3}>just two people</text>
         </g>
 
-        {/* the network growing, link by link */}
-        {growLinks.map(([a, b], i) => {
-          const t = stagger(frame, N.grow, i, growLinks.length, 0.25);
+        {/* the network growing encounter by encounter: two people pop up, each sends the other a credential, then they are linked */}
+        {GROW.map(([na, nb], i) => {
+          const t = stagger(frame, N.grow, i, GROW.length, 0.2);
           if (t <= 0) return null;
-          const pa = M.at(NODES[a]);
-          const pb = M.at(NODES[b]);
-          return <line key={i} x1={pa[0]} y1={pa[1]} x2={lerp(pa[0], pb[0], t)} y2={lerp(pa[1], pb[1], t)} stroke={C.accent} strokeOpacity={0.6} strokeWidth={3} strokeLinecap="round" />;
+          const pa = M.at(NODES[na]);
+          const pb = M.at(NODES[nb]);
+          const fly = part(t, 0.25, 0.7);
+          const line = part(t, 0.65, 0.9);
+          const cred = (from: Pt, to: Pt, key: string) => {
+            if (fly <= 0 || fly >= 1) return null;
+            const x = lerp(from[0], to[0], fly);
+            const y = lerp(from[1], to[1], fly);
+            return (
+              <g key={key} transform={`translate(${x} ${y})`} opacity={part(fly, 0, 0.15) * (1 - part(fly, 0.85, 1))}>
+                <rect x={-22} y={-16} width={44} height={32} rx={7} fill={C.band} stroke={C.success} strokeWidth={3} />
+                <path d="M-9 0 l6 6 l12 -12" fill="none" stroke={C.success} strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" />
+              </g>
+            );
+          };
+          return (
+            <g key={`g${i}`}>
+              {line > 0 ? <line x1={pa[0]} y1={pa[1]} x2={lerp(pa[0], pb[0], line)} y2={lerp(pa[1], pb[1], line)} stroke={C.accent} strokeOpacity={0.6} strokeWidth={3} strokeLinecap="round" /> : null}
+              {cred(pa, pb, 'ab')}
+              {cred(pb, pa, 'ba')}
+            </g>
+          );
+        })}
+        {others.map((n) => {
+          const t = interpolate(stagger(frame, N.grow, firstLink.get(n) ?? 0, GROW.length, 0.2), [0, 0.25], [0, 1], clamp);
+          if (t <= 0) return null;
+          const [x, y] = M.at(NODES[n]);
+          return <circle key={n} cx={x} cy={y} r={14 * M.s * (0.5 + 0.5 * t)} opacity={t} fill={C.bg} stroke={C.accent} strokeWidth={4} />;
         })}
         {/* Ana and Ben's own link, the first in the network */}
         {link > 0 ? (() => {
@@ -136,12 +171,6 @@ export const Network: React.FC = () => {
           const pb = M.at(NODES[BEN]);
           return <line x1={pa[0]} y1={pa[1]} x2={lerp(pa[0], pb[0], link)} y2={lerp(pa[1], pb[1], link)} stroke={C.accent} strokeWidth={4} strokeLinecap="round" />;
         })() : null}
-        {others.map((n) => {
-          const t = stagger(frame, N.grow, order.get(n) ?? 0, others.length, 0.3);
-          if (t <= 0) return null;
-          const [x, y] = M.at(NODES[n]);
-          return <circle key={n} cx={x} cy={y} r={14 * M.s * (0.6 + 0.4 * t)} opacity={t} fill={C.bg} stroke={C.accent} strokeWidth={4} />;
-        })}
         {person('A', ANA)}
         {person('B', BEN)}
       </svg>

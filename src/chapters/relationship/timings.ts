@@ -31,7 +31,7 @@ export const P = {
 } as const;
 
 /** Timings of the closing part of chapter 03, on that part's own timeline. */
-export const NETWORK_S = 7.8;
+export const NETWORK_S = 10.4;
 
 export const N = {
   /** the phones, as the encounter left them, contract into two points */
@@ -42,11 +42,11 @@ export const N = {
   move: { from: 1.4, to: 2.3 },
   link: { from: 2.1, to: 2.6 },
 
-  /** pair by pair, others meet: the network grows */
-  grow: { from: 3.3, to: 5.6 },
+  /** encounter by encounter, others meet: people pop up, trade credentials, and are linked */
+  grow: { from: 3.3, to: 8.3 },
 
   /** where links grow dense, groups appear */
-  groups: { from: 6.3, to: 7.0 },
+  groups: { from: 8.9, to: 9.6 },
 } as const;
 
 /** the moment of the encounter, on its own timeline, the closing part starts from: both contacts made */

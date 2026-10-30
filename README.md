@@ -241,8 +241,8 @@ Times in seconds on the chapter's timeline:
 | 4 Second confirmation | 13.4 to 17.3 | 16.9 | Ana's credential docked on Ben's phone, both phones show "Connected" |
 | 5 Contacts | 17.3 to 20.3 | 19.3 | both credentials became the new contact, Ana's first, then Ben's |
 | 6 Connected | 20.3 to 23.5 | 23.2 | the phones contracted into Ana and Ben, linked inside the network |
-| 7 Network | 23.5 to 26.5 | 26.2 | pair by pair, the network around them |
-| 8 Groups | 26.5 to 28.1 | 27.6 | the two groups where links are dense, a pair at the edge |
+| 7 Network | 23.5 to 29.1 | 28.8 | encounter by encounter: people pop up, trade credentials, and are linked |
+| 8 Groups | 29.1 to 30.7 | 30.2 | the two groups where links are dense, a pair at the edge |
 
 Names and keys are illustration, as on the site.
 
