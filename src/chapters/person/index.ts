@@ -20,7 +20,7 @@ export const person: Chapter = {
   beats: [
     { id: 'line', from: 0.3, hold: 1.6, caption: principle.line, emphasis: true, notes: principle.body },
     { id: 'copies', from: 2.0, hold: 3.7, caption: 'Her document becomes two, one on each of her devices' },
-    { id: 'person', from: 4.1, hold: 5.2, caption: 'Together they are the person' },
-    { id: 'outside', from: 5.6, hold: 6.8, caption: 'Agent and relay may help. They stay outside', notes: principle.notes },
+    { id: 'person', from: 4.1, hold: 5.4, caption: 'Together they are the person' },
+    { id: 'outside', from: 5.9, hold: 7.0, caption: 'Agent and relay may help. They stay outside', notes: principle.notes },
   ],
 };

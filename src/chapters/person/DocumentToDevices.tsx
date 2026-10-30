@@ -3,7 +3,7 @@ import { useCurrentFrame } from '../../kit/timeline';
 import { PEOPLE } from '../../kit/cast';
 import { C, FONT } from '../../kit/theme';
 import { AnchorText, Box, DOC, DocCard, ROWS, RowName, easeInOut, lerp, part, prog, rowAt, type Pt } from '../identity/shared';
-import { T } from './timings';
+import { CENTER_SHIFT, T } from './timings';
 
 /** A key, its ring centred left of (cx, cy), in box units scaled by k. */
 const Key: React.FC<{ cx: number; cy: number; k: number; opacity: number }> = ({ cx, cy, k, opacity }) => {
@@ -50,6 +50,8 @@ export const DocumentToDevices: React.FC = () => {
   const keys = prog(frame, T.keys);
   const split = prog(frame, T.split, easeInOut);
   const person = prog(frame, T.person);
+  const center = prog(frame, T.center, easeInOut);
+  const lift = `translate(0 ${-CENTER_SHIFT * center})`;
   const outside = prog(frame, T.outside);
 
   /** a copy on its way: out of the document, sideways, then down onto its device */
@@ -67,7 +69,12 @@ export const DocumentToDevices: React.FC = () => {
 
   return (
     <Box>
-      {/* the person: a soft region forming around both devices */}
+      {/* the document, as chapter 01 left it; it becomes two */}
+      <g opacity={1 - part(split, 0, 0.08)}>
+        <FullDoc />
+      </g>
+      {/* the person: a soft region forming around both devices, once they stand in the middle */}
+      <g transform={lift}>
       <g opacity={person}>
         <rect x={86} y={128} width={232} height={168} rx={64} fill={C.tint} fillOpacity={0.55} stroke={PEOPLE.A.tone.stage} strokeOpacity={0.55} strokeWidth={1.4} />
         <text x={202} y={146} textAnchor="middle" fontFamily={FONT} fontSize={11} fontWeight={700} fill={PEOPLE.A.tone.stage}>
@@ -90,16 +97,15 @@ export const DocumentToDevices: React.FC = () => {
       </g>
       <Key cx={PHONE.key[0]} cy={PHONE.key[1]} k={0.55} opacity={keys} />
       <Key cx={LAPTOP.key[0]} cy={LAPTOP.key[1]} k={0.55} opacity={keys} />
-
-      {/* the document, as chapter 01 left it; it becomes two */}
-      <g opacity={1 - part(split, 0, 0.08)}>
-        <FullDoc />
       </g>
-      {copy(PHONE.doc, PHONE.docScale, -1)}
-      {copy(LAPTOP.doc, LAPTOP.docScale, 1)}
+
+      <g transform={lift}>
+        {copy(PHONE.doc, PHONE.docScale, -1)}
+        {copy(LAPTOP.doc, LAPTOP.docScale, 1)}
+      </g>
 
       {/* outside the person: they may help, they never stand inside */}
-      <g opacity={outside} fontFamily={FONT} textAnchor="middle">
+      <g opacity={outside} fontFamily={FONT} textAnchor="middle" transform={lift}>
         <rect x={338} y={136} width={56} height={40} rx={8} fill="none" stroke={C.gray4} strokeWidth={1.3} strokeDasharray="4 3.5" />
         <text x={366} y={160} fontSize={9.5} fontWeight={600} fill={C.gray3}>
           agent

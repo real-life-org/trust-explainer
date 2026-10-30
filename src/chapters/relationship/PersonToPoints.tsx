@@ -7,13 +7,13 @@ import { clamp, f } from '../../kit/time';
 import { useLayout } from '../encounter/layout';
 import { useBox, easeInOut, lerp, part, prog } from '../identity/shared';
 import { DocumentToDevices } from '../person/DocumentToDevices';
-import { DURATION_S as PERSON_S } from '../person/timings';
+import { CENTER_SHIFT, DURATION_S as PERSON_S } from '../person/timings';
 import { Encounter } from '../encounter/Encounter';
 
 import { ENCOUNTER_REST_S, P } from './timings';
 
 /** the centre of Ana's region in chapter 02, in that drawing's box units */
-const REGION_C = { x: 202, y: 212 };
+const REGION_C = { x: 202, y: 212 - CENTER_SHIFT };
 
 /**
  * The opening of chapter 03. It starts where chapter 02 ends: Ana's devices
