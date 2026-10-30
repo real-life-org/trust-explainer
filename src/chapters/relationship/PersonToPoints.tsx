@@ -36,7 +36,6 @@ export const PersonToPoints: React.FC = () => {
   // where the person's region sits on the stage, and where Ana's point goes
   const rc = { x: box.x + REGION_C.x * box.s, y: box.y + REGION_C.y * box.s };
   const scale = 1 - contract;
-  const dotA = { x: lerp(rc.x, L.home.A.x, part(anaDot, 0, 1)), y: lerp(rc.y, L.home.A.y, part(anaDot, 0, 1)) };
 
   const pw = PHONE.w * L.s;
   const ph = PHONE.h * L.s;
@@ -63,7 +62,8 @@ export const PersonToPoints: React.FC = () => {
             position: 'absolute',
             inset: 0,
             transformOrigin: `${rc.x}px ${rc.y}px`,
-            transform: `scale(${scale})`,
+            // shrink and move at once, straight onto the place of Ana's point
+            transform: `translate(${(L.home.A.x - rc.x) * contract}px, ${(L.home.A.y - rc.y) * contract}px) scale(${scale})`,
             opacity: 1 - part(contract, 0.6, 1),
           }}
         >
@@ -73,7 +73,7 @@ export const PersonToPoints: React.FC = () => {
         </div>
       ) : null}
       <svg width={cfg.width} height={cfg.height} style={{ position: 'absolute', left: 0, top: 0 }}>
-        {shape(contract >= 1 ? L.home.A : dotA, anaDot, PEOPLE.A.tone.stage)}
+        {shape(L.home.A, anaDot, PEOPLE.A.tone.stage)}
         {shape(L.home.B, benDot, PEOPLE.B.tone.stage)}
       </svg>
     </div>

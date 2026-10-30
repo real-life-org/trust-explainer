@@ -11,7 +11,8 @@ export const P = {
   /** the person (end of chapter 02) contracts to one point */
   outside: { from: 0.3, to: 0.7 },
   contract: { from: 0.5, to: 1.5 },
-  anaDot: { from: 1.1, to: 1.7 },
+  /** the point appears where the person has shrunk to, as the person vanishes */
+  anaDot: { from: 1.2, to: 1.55 },
 
   /** a second point: Ben */
   benDot: { from: 2.2, to: 2.7 },
