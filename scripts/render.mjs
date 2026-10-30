@@ -2,8 +2,8 @@
 // uses: a headless Chromium draws web/frame.html frame by frame, ffmpeg
 // encodes the screenshots.
 //
-//   node scripts/render.mjs --chapter no-issuer [--format square] --out out/no-issuer.mp4
-//   node scripts/render.mjs --chapter no-issuer --stills out/still   (one PNG per beat hold)
+//   node scripts/render.mjs --chapter relationship [--format square] --out out/relationship.mp4
+//   node scripts/render.mjs --chapter relationship --stills out/still   (one PNG per beat hold)
 //   node scripts/render.mjs ... --frames 0,90,180 --stills out/x       (chosen frames)
 //   node scripts/render.mjs ... --every 6 --stills out/seq/f          (every nth frame)
 //

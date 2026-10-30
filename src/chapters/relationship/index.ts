@@ -1,20 +1,20 @@
 import { joinParts, type Chapter, type Part } from '../../kit/chapter';
 import { encounterPart } from '../encounter';
 import { PRINCIPLES } from '../principles';
-import { NoIssuerPicture } from './NoIssuerPicture';
+import { PersonToPoints } from './PersonToPoints';
 import { PICTURE_OVERLAP_S, PICTURE_S } from './timings';
 
-const principle = PRINCIPLES['no-issuer'];
+const principle = PRINCIPLES['relationship'];
 
-/** The deck's picture, built in three steps: the line, issued, made. */
+/** From chapter 02's person to two points, then two phones. */
 const picturePart: Part = {
-  Scene: NoIssuerPicture,
+  Scene: PersonToPoints,
   durationS: PICTURE_S,
   overlapS: PICTURE_OVERLAP_S,
   beats: [
-    { id: 'line', from: 0.3, hold: 1.4, caption: principle.line, emphasis: true, notes: principle.body },
-    { id: 'issued', from: 1.8, hold: 3.0, caption: 'Where trust is issued, everyone hangs on one party' },
-    { id: 'made', from: 3.4, hold: 4.8, caption: 'Where trust is made, people link up pair by pair', notes: principle.notes },
+    { id: 'line', from: 0.3, hold: 1.75, caption: principle.line, emphasis: true, notes: principle.body },
+    { id: 'ben', from: 2.1, hold: 2.85, caption: 'Ana meets Ben' },
+    { id: 'phones', from: 3.2, hold: 4.4, caption: 'Each holds a phone' },
   ],
 };
 
@@ -28,12 +28,13 @@ export const ENCOUNTER_CLEAR_AT = ENCOUNTER_AT + (PARTS[PARTS.indexOf(encounterP
 export const ENCOUNTER_BEAT = PARTS.slice(0, PARTS.indexOf(encounterPart)).reduce((n, p) => n + p.beats.length, 0);
 
 /**
- * Chapter 04 "No issuer": the deck's picture, then one encounter in which
- * two people make the proof of their meeting themselves.
+ * Chapter 03 "Relationship": the person of chapter 02 contracts to a point,
+ * a second person appears, both take up a phone, and the two meet: one
+ * encounter, phone over phone.
  */
-export const noIssuer: Chapter = {
-  id: 'no-issuer',
-  composition: 'NoIssuer',
+export const relationship: Chapter = {
+  id: 'relationship',
+  composition: 'Relationship',
   kicker: principle.title,
   principle,
   ...joinParts(PARTS),

@@ -1,6 +1,6 @@
 // PNG stills of every built chapter at each beat's hold, in both formats,
 // into out/. File names start with the principle's number, so they sort in
-// deck order: out/still-04-no-issuer-0-line.png, out/square-04-no-issuer-0-line.png.
+// deck order: out/still-03-relationship-0-line.png, out/square-03-relationship-0-line.png.
 // With --pdf the stills are also bound into out/slides.pdf (16:9) and
 // out/slides-square.pdf, one still per page.
 // Usage: node scripts/stills.mjs [--pdf] [--browser=/path/to/chrome]

@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { CHAPTERS } from '../src/chapters';
-import { ENCOUNTER_BEAT } from '../src/chapters/no-issuer';
+import { ENCOUNTER_BEAT } from '../src/chapters/relationship';
 import { chapterLabel } from '../src/chapters/outline';
 import { beatSpans } from '../src/kit/chapter';
 import { FORMATS } from '../src/kit/format';
@@ -20,9 +20,12 @@ const SLIDES: Pos[] = CHAPTERS.flatMap((ch, c) => stopsOf(ch).map((_, k) => ({ c
 const indexOf = (p: Pos) => SLIDES.findIndex((s) => s.c === p.c && s.k === p.k);
 
 /** Links from before chapter ids changed: old id -> new id and how far its beats moved. */
-const MOVED: Record<string, { id: string; beat: number }> = { encounter: { id: 'no-issuer', beat: ENCOUNTER_BEAT } };
+const MOVED: Record<string, { id: string; beat: number }> = {
+  encounter: { id: 'relationship', beat: ENCOUNTER_BEAT },
+  'no-issuer': { id: 'relationship', beat: 0 },
+};
 
-/** `#no-issuer/2`: chapter id and beat index (0 = the chapter's first beat). */
+/** `#relationship/2`: chapter id and beat index (0 = the chapter's first beat). */
 function readHash(): Pos {
   const m = location.hash.match(/^#([\w-]+)\/(\d+)$/);
   if (!m) return { c: 0, k: 0 };

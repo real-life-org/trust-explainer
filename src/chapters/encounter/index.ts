@@ -4,7 +4,7 @@ import { DURATION_S } from './timings';
 
 /**
  * Two people meet, verify each other phone over phone, and become
- * contacts. A part of chapter 04 "No issuer"; beats in seconds on the
+ * contacts. A part of chapter 03 "Relationship"; beats in seconds on the
  * part's own timeline.
  */
 export const encounterPart: Part = {

@@ -9,11 +9,19 @@ they cannot drift apart.
 The chapters follow the deck "RLTP Core Principles", one chapter per
 principle, in the deck's order (01 to 11). Each chapter first draws the
 principle's picture from the deck, step by step, and then the scenes that
-explain it. Chapter 04 "No issuer" is built: its picture sets trust that is
-issued against trust that is made, then it animates the in-person
-encounter: Ana and Ben each show a code, Ben scans Ana's phone over phone,
-both confirm, each signs an ed25519 encounter credential for the other, and
-each credential jumps into the contact list and becomes the new contact.
+explain it. Built so far, and told as one movement from 01 to 03:
+
+- 01 "Identity": twelve magic words become one seed, the seed derives one
+  anchor per context, and every anchor gathers in Ana's document.
+- 02 "Person": the document becomes two copies, one on each of her devices;
+  together they are the person. Agent and relay stay outside.
+- 03 "Relationship": the person contracts to a point, a second one appears,
+  both take up a phone, and they meet: Ana and Ben each show a code, Ben
+  scans Ana's phone over phone, both confirm, each signs an ed25519
+  encounter credential for the other, and each credential becomes the new
+  contact.
+- 07 "Relational reading": Ana's and Ben's stars stand apart, then Ben lays
+  his over hers; what they share becomes two lists, contacts and groups.
 The other principles are in the outline, without scenes yet.
 
 The look follows the ceremony simulator in
@@ -31,10 +39,10 @@ Live: <https://real-life.org/trust-explainer/>
 npm install
 npm run dev             # slides at /, video.html, animations.html, frame.html?scrub
 npm run build           # static site in out/web/, works from any subpath
-npm run render          # out/no-issuer.mp4 (1920x1080)
-npm run render:square   # out/no-issuer-square.mp4 (1080x1080)
+npm run render          # out/relationship.mp4 (1920x1080)
+npm run render:square   # out/relationship-square.mp4 (1080x1080)
 npm run stills          # PNG of every beat's hold, both formats, in out/
-                        # (out/still-04-no-issuer-0-line.png, out/square-04-...)
+                        # (out/still-03-relationship-0-line.png, out/square-03-...)
 npm run stills -- --pdf # also out/slides.pdf and out/slides-square.pdf, one still per page
 ```
 
@@ -75,10 +83,10 @@ same slide. The clock runs at display rate.
 | C, click on the tab | open or close the OpenVTC comparison |
 | Esc | close the comparison, else leave the presentation |
 
-The current slide is kept in the URL (`#no-issuer/2`: chapter and beat, 0
+The current slide is kept in the URL (`#relationship/2`: chapter and beat, 0
 is the first beat), so a reload or a shared link opens the same slide.
 Older links to the encounter (`#encounter/2`) open the same slide inside
-chapter 04.
+chapter 03; links to the former chapter 04 (`#no-issuer/…`) open chapter 03.
 
 ## Elsewhere in the ecosystem
 
@@ -151,8 +159,11 @@ src/
     principles.ts      the eleven principles of the deck: title, line, body, notes, contrast
     outline.ts         the principles in deck order, with their chapters once built
     index.ts           all built chapters in telling order
-    no-issuer/         chapter 04 "No issuer": the picture, then the encounter
-    encounter/         the encounter, a part of chapter 04
+    identity/          chapter 01: magic words, seed, anchors, Ana's document; shared box and document
+    person/            chapter 02: the document becomes two copies on her devices
+    relationship/      chapter 03: the person contracts to a point, then the encounter
+    encounter/         the encounter, a part of chapter 03
+    relational-reading/ chapter 07: two stars laid on top, two lists
 web/
   Page.tsx, ui.tsx           page frame with the top bar, small UI pieces
   index.html, SlidesPage.tsx the slides: strip, stage, presenting
@@ -185,7 +196,7 @@ an `emphasis` beat (a principle's line), whose caption is larger.
 A chapter that tells a principle carries it as `principle` (title, line,
 body, notes; `src/chapters/principles.ts`). Its kicker is the principle's
 title, and its number comes from its place in `OUTLINE`
-(`src/chapters/outline.ts`): slides and player label it "04 · No issuer".
+(`src/chapters/outline.ts`): slides and player label it "03 · Relationship".
 `CHAPTERS` is every outline entry that has a chapter; entries without one
 are placeholders and never reach the slides or the film.
 
@@ -199,17 +210,17 @@ To add a chapter: create `src/chapters/<id>/` with its scenes and an
 `index.ts` exporting a `Chapter` (with `principle` and the picture as the
 first part), and set it on its entry in `src/chapters/outline.ts`.
 
-## Chapter 04: No issuer
+## Chapter 03: Relationship
 
-Two parts. The picture (`src/chapters/no-issuer/`) redraws the deck slide:
-on the left everyone tied to one issuer, on the right people linked pair
-by pair; side by side in 16:9, one above the other in square. Its timings
-are in `no-issuer/timings.ts`. Then the encounter, on its own
-timeline.
+Two parts. The picture (`src/chapters/relationship/`) starts on chapter
+02's last frame, drawn by chapter 02's own scene held at its end: the person
+contracts to a point, Ben's point appears, and both grow into the phones the
+encounter starts from. Its timings are in `relationship/timings.ts`. Then
+the encounter, on its own timeline.
 
 The encounter's beats are in `src/chapters/encounter/index.ts`, animation
 timings in `timings.ts` (seconds on the encounter's own timeline; the
-chapter starts it after the picture, `PICTURE_S` in `no-issuer/timings.ts`). Each step is its own
+chapter starts it after the picture, `PICTURE_S` in `relationship/timings.ts`). Each step is its own
 component in `steps/` and runs in its own `<Sequence>` in `Encounter.tsx`.
 Phone motion (the scan arc and the return) is computed from the same
 constants in `layout.ts`, which also holds the code position, the
