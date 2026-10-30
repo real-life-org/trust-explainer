@@ -7,19 +7,19 @@ import type { Principle } from '../kit/chapter';
  * answers the same question (shown on the slides page only).
  */
 export const PRINCIPLES = {
-  'person': {
-    title: "Person",
-    line: "The person is the node.",
-    body: "A person's keys live on their own devices, and each device can act on its own. Nothing has to be running for two people to meet or decide. An agent may help. It is never a condition.",
-    notes: "Where does a person's ability to act live? Here: with the person, on their devices, each holding its own keys. In the ecosystem picture every node has a trust agent that holds the keys and signs for the person; the devices are clients of it. Here an agent or a relay may help with reachability and delivery, but nothing has to be running for two people to meet, sign or decide. The honest price: loss and recovery rest with the person, and being reachable between sessions needs a carrier. Open: restoring a person onto a new device is not built yet. An agent can also be a contact of its own, with its own keys and relationships; no key reveals whether a person or an agent holds it. Open: whether one can tell that one is meeting an agent. Pairwise identities per relationship: next slide.",
-    contrast: "In OpenVTC the node is a trust agent (VTA), a signing oracle with a policy: the master seed lives in the VTA, clients send unsigned data and the VTA signs inside its own process. Hosting is recommended, self-hosting possible, and the DTG spec also allows local agents. Here the devices hold the keys and act themselves. We have not seen an encounter or joining flow there without an agent; a browser tab joining a data room without an agent has been shown.",
-  },
   'identity': {
     title: "Identity",
     line: "One person, a fresh identity for every relationship.",
     body: "From one seed on their devices, a person derives a new identifier for each contact, group and public appearance. No one else can link them. The relationships know the person. The network does not.",
-    notes: "Identity follows the relationship, not the other way round. One seed, kept by the person, derives an anchor per context: this contact, that group, the public. Nobody who sees two of them can tell they are the same person. This we share with the wider ecosystem (personas per context); the difference is where the seed lives and who derives: the person's own devices, not an agent minting on their behalf. Rotation and recovery follow from the seed, so a lost device does not mean a lost person.",
+    notes: "Identity follows the relationship, not the other way round. One seed, kept by the person, derives an anchor per context: this contact, that group, the public. Nobody who sees two of them can tell they are the same person. This we share with the wider ecosystem (personas per context); the difference is where the seed lives and who derives: the person's own devices, not an agent minting on their behalf. Rotation and recovery follow from the seed, so a lost device does not mean a lost person. The picture starts where a person starts: twelve magic words (English BIP-39), which become the seed. Each anchor is a did:key, self-certifying, no registry. The last step gathers every anchor into one document, the person's own encrypted state: which contexts exist and under which anchor. The follow-on question: where does that document live? Next slide.",
     contrast: "The idea is shared: one persona per context. In OpenVTC a persona exists per community, minted by the agent as a did:webvh, which needs a DID host. Here it exists per relationship, derived on the device from one seed, with no hosting.",
+  },
+  'person': {
+    title: "Person",
+    line: "The person is the node.",
+    body: "A person's keys live on their own devices, and each device can act on its own. Nothing has to be running for two people to meet or decide. An agent may help. It is never a condition.",
+    notes: "Where does a person's ability to act live? Here: with the person, on their devices, each holding its own keys. In the ecosystem picture every node has a trust agent that holds the keys and signs for the person; the devices are clients of it. Here an agent or a relay may help with reachability and delivery, but nothing has to be running for two people to meet, sign or decide. The honest price: loss and recovery rest with the person, and being reachable between sessions needs a carrier. Open: restoring a person onto a new device is not built yet. An agent can also be a contact of its own, with its own keys and relationships; no key reveals whether a person or an agent holds it. Open: whether one can tell that one is meeting an agent. The bridge from the previous slide: the magic words restore every key, but which contexts exist is data in the person's encrypted state, the personal document every device holds and keeps in step (Identity 6.3); recovery needs both. A relay may carry that document between devices, sealed; it never reads it.",
+    contrast: "In OpenVTC the node is a trust agent (VTA), a signing oracle with a policy: the master seed lives in the VTA, clients send unsigned data and the VTA signs inside its own process. Hosting is recommended, self-hosting possible, and the DTG spec also allows local agents. Here the devices hold the keys and act themselves. We have not seen an encounter or joining flow there without an agent; a browser tab joining a data room without an agent has been shown.",
   },
   'relationship': {
     title: "Relationship",
