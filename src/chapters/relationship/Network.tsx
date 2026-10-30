@@ -8,7 +8,7 @@ import { clamp, f } from '../../kit/time';
 import { interpolate } from '../../kit/motion';
 import { Encounter } from '../encounter/Encounter';
 import { useLayout } from '../encounter/layout';
-import { easeInOut, lerp, part, prog, stagger } from '../identity/shared';
+import { easeInOut, lerp, part, prog } from '../identity/shared';
 import { ENCOUNTER_END_S, N } from './timings';
 
 type Pt = [number, number];
@@ -40,6 +40,33 @@ const GROW: Array<[number, number]> = (() => {
     seen.add(l[1]);
   }
   return out;
+})();
+
+/**
+ * When each encounter runs, in seconds on this part's timeline: the first
+ * three one at a time, so the pattern can be read; then closer together.
+ */
+const SCHEDULE: Array<{ from: number; to: number }> = (() => {
+  const out: Array<{ from: number; to: number }> = [];
+  let t = N.grow.from;
+  GROW.forEach((_, i) => {
+    const slow = i < 3;
+    const dur = slow ? 0.9 : 0.62;
+    out.push({ from: t, to: t + dur });
+    t += slow ? 0.95 : 0.27;
+  });
+  return out;
+})();
+
+/** who is new in each encounter: the one not yet in the network (both, for the pair at the edge) */
+const NEWCOMERS: number[][] = (() => {
+  const seen = new Set([ANA, BEN]);
+  return GROW.map(([a, b]) => {
+    const fresh = [a, b].filter((n) => !seen.has(n));
+    seen.add(a);
+    seen.add(b);
+    return fresh;
+  });
 })();
 
 const GROUPS = [
@@ -95,7 +122,7 @@ export const Network: React.FC = () => {
   // Ana and Ben: from star centres at the phones' places to two nodes of the network
   const person = (who: 'A' | 'B', idx: number) => {
     const home: Pt = [L.home[who].x, L.home[who].y];
-    const to = M.at(NODES[idx]);
+    const to = at(idx);
     const x = lerp(home[0], to[0], move);
     const y = lerp(home[1], to[1], move);
     const r = lerp(57, 17 * M.s, move);
@@ -110,10 +137,71 @@ export const Network: React.FC = () => {
     ) : null;
   };
 
+  const R = 14 * M.s; // a person's radius in the network
+  const centre = M.at([400, 270]);
+  const unit = (from: Pt, to: Pt): Pt => {
+    const d = Math.hypot(to[0] - from[0], to[1] - from[1]) || 1;
+    return [(to[0] - from[0]) / d, (to[1] - from[1]) / d];
+  };
+
+  /*
+   * Each encounter: a newcomer appears a little outside, walks to the one it
+   * meets and back to its place; two who are already there both step toward
+   * each other. Where they touch, a soft ring; from there the link grows to
+   * both of them. Everyone's offset from their place is summed per frame.
+   */
+  const offset = new Map<number, Pt>();
+  const shown = new Map<number, number>();
+  const rings: Array<{ at: Pt; t: number }> = [];
+  const lines: Array<{ from: Pt; a: number; b: number; t: number }> = [];
+  GROW.forEach(([na, nb], i) => {
+    const t = interpolate(frame, [f(SCHEDULE[i].from), f(SCHEDULE[i].to)], [0, 1], clamp);
+    if (t <= 0) return;
+    const pa = M.at(NODES[na]);
+    const pb = M.at(NODES[nb]);
+    const fresh = NEWCOMERS[i];
+    const go = part(t, 0.12, 0.45);
+    const back = part(t, 0.55, 0.88);
+    const step = easeInOut(go) * (1 - easeInOut(back)); // out and home again
+    let touch: Pt;
+    if (fresh.length === 1) {
+      const n = fresh[0];
+      const other = n === na ? nb : na;
+      const pn = M.at(NODES[n]);
+      const po = M.at(NODES[other]);
+      const out = unit(centre, pn);
+      const spawn: Pt = [pn[0] + out[0] * 90, pn[1] + out[1] * 90];
+      const u = unit(po, pn);
+      const meet: Pt = [po[0] + u[0] * 2.1 * R, po[1] + u[1] * 2.1 * R];
+      // the newcomer: from where it appears to the meeting and on to its own place
+      const pos: Pt = back > 0 ? [lerp(meet[0], pn[0], easeInOut(back)), lerp(meet[1], pn[1], easeInOut(back))] : [lerp(spawn[0], meet[0], easeInOut(go)), lerp(spawn[1], meet[1], easeInOut(go))];
+      offset.set(n, [pos[0] - pn[0], pos[1] - pn[1]]);
+      shown.set(n, part(t, 0, 0.12));
+      touch = [lerp(po[0], meet[0], 0.5), lerp(po[1], meet[1], 0.5)];
+    } else {
+      // both step toward each other until they touch, then home
+      const mid: Pt = [(pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2];
+      const half = Math.max(0, Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) / 2 - 1.05 * R);
+      const ua = unit(pa, pb);
+      [na, nb].forEach((n, k) => {
+        const sgn = k === 0 ? 1 : -1;
+        const prev = offset.get(n) ?? [0, 0];
+        offset.set(n, [prev[0] + sgn * ua[0] * half * step, prev[1] + sgn * ua[1] * half * step]);
+        if (fresh.includes(n)) shown.set(n, part(t, 0, 0.12));
+      });
+      touch = mid;
+    }
+    const ring = part(t, 0.4, 0.7);
+    if (ring > 0 && ring < 1) rings.push({ at: touch, t: ring });
+    lines.push({ from: touch, a: na, b: nb, t: part(t, 0.5, 0.9) });
+  });
+  function at(n: number): Pt {
+    const p = M.at(NODES[n]);
+    const o = offset.get(n) ?? [0, 0];
+    return [p[0] + o[0], p[1] + o[1]];
+  }
   const others = NODES.map((_, i) => i).filter((i) => i !== ANA && i !== BEN);
-  // the first encounter each other person takes part in: that is when they pop up
-  const firstLink = new Map<number, number>();
-  GROW.forEach(([a, b], i) => [a, b].forEach((n) => { if (!firstLink.has(n)) firstLink.set(n, i); }));
+  const everShown = (n: number) => shown.get(n) ?? (GROW.some(([a, b], i) => (a === n || b === n) && frame >= f(SCHEDULE[i].to)) ? 1 : 0);
 
   return (
     <div style={{ position: 'absolute', inset: 0 }}>
@@ -132,43 +220,34 @@ export const Network: React.FC = () => {
           <text x={M.at([40, 0])[0]} y={M.at([0, 480])[1]} fontFamily={FONT} fontSize={24} fill={C.gray3}>just two people</text>
         </g>
 
-        {/* the network growing encounter by encounter: two people pop up, each sends the other a credential, then they are linked */}
-        {GROW.map(([na, nb], i) => {
-          const t = stagger(frame, N.grow, i, GROW.length, 0.2);
-          if (t <= 0) return null;
-          const pa = M.at(NODES[na]);
-          const pb = M.at(NODES[nb]);
-          const fly = part(t, 0.25, 0.7);
-          const line = part(t, 0.65, 0.9);
-          const cred = (from: Pt, to: Pt, key: string) => {
-            if (fly <= 0 || fly >= 1) return null;
-            const x = lerp(from[0], to[0], fly);
-            const y = lerp(from[1], to[1], fly);
-            return (
-              <g key={key} transform={`translate(${x} ${y})`} opacity={part(fly, 0, 0.15) * (1 - part(fly, 0.85, 1))}>
-                <rect x={-22} y={-16} width={44} height={32} rx={7} fill={C.band} stroke={C.success} strokeWidth={3} />
-                <path d="M-9 0 l6 6 l12 -12" fill="none" stroke={C.success} strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" />
-              </g>
-            );
-          };
+        {/* links, each grown out of the place where two people met */}
+        {lines.map((l, i) => {
+          if (l.t <= 0) return null;
+          // once grown, a link follows its two people wherever they step
+          const a = at(l.a);
+          const b = at(l.b);
+          if (l.t >= 1) return <line key={`l${i}`} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={C.accent} strokeOpacity={0.6} strokeWidth={3} strokeLinecap="round" />;
           return (
-            <g key={`g${i}`}>
-              {line > 0 ? <line x1={pa[0]} y1={pa[1]} x2={lerp(pa[0], pb[0], line)} y2={lerp(pa[1], pb[1], line)} stroke={C.accent} strokeOpacity={0.6} strokeWidth={3} strokeLinecap="round" /> : null}
-              {cred(pa, pb, 'ab')}
-              {cred(pb, pa, 'ba')}
+            <g key={`l${i}`} stroke={C.accent} strokeOpacity={0.6} strokeWidth={3} strokeLinecap="round">
+              <line x1={l.from[0]} y1={l.from[1]} x2={lerp(l.from[0], a[0], l.t)} y2={lerp(l.from[1], a[1], l.t)} />
+              <line x1={l.from[0]} y1={l.from[1]} x2={lerp(l.from[0], b[0], l.t)} y2={lerp(l.from[1], b[1], l.t)} />
             </g>
           );
         })}
+        {/* the moment of meeting */}
+        {rings.map((r, i) => (
+          <circle key={`r${i}`} cx={r.at[0]} cy={r.at[1]} r={R * (1 + 1.6 * r.t)} fill="none" stroke={C.accentHigh} strokeWidth={2.5} opacity={0.7 * (1 - r.t)} />
+        ))}
         {others.map((n) => {
-          const t = interpolate(stagger(frame, N.grow, firstLink.get(n) ?? 0, GROW.length, 0.2), [0, 0.25], [0, 1], clamp);
+          const t = everShown(n);
           if (t <= 0) return null;
-          const [x, y] = M.at(NODES[n]);
-          return <circle key={n} cx={x} cy={y} r={14 * M.s * (0.5 + 0.5 * t)} opacity={t} fill={C.bg} stroke={C.accent} strokeWidth={4} />;
+          const [x, y] = at(n);
+          return <circle key={n} cx={x} cy={y} r={R * (0.6 + 0.4 * t)} opacity={t} fill={C.bg} stroke={C.accent} strokeWidth={4} />;
         })}
         {/* Ana and Ben's own link, the first in the network */}
         {link > 0 ? (() => {
-          const pa = M.at(NODES[ANA]);
-          const pb = M.at(NODES[BEN]);
+          const pa = at(ANA);
+          const pb = at(BEN);
           return <line x1={pa[0]} y1={pa[1]} x2={lerp(pa[0], pb[0], link)} y2={lerp(pa[1], pb[1], link)} stroke={C.accent} strokeWidth={4} strokeLinecap="round" />;
         })() : null}
         {person('A', ANA)}

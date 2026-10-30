@@ -24,8 +24,8 @@ const networkPart: Part = {
   durationS: NETWORK_S,
   beats: [
     { id: 'pair', from: 0, hold: 2.9, caption: 'Now Ana and Ben are connected' },
-    { id: 'network', from: 3.2, hold: 8.5, caption: 'Encounter by encounter, others meet' },
-    { id: 'groups', from: 8.8, hold: 9.9, caption: 'Where links grow dense, groups appear', notes: principle.notes },
+    { id: 'network', from: 3.2, hold: 10.4, caption: 'Encounter by encounter, others meet' },
+    { id: 'groups', from: 10.7, hold: 11.8, caption: 'Where links grow dense, groups appear', notes: principle.notes },
   ],
 };
 
