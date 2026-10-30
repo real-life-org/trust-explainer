@@ -2,24 +2,27 @@
  * Timings of chapter 07, in seconds on the chapter's timeline. Each step
  * ends before its beat's hold (index.ts), so the slides stop on a still.
  */
-export const DURATION_S = 8.9;
+export const DURATION_S = 10.2;
 
 export const T = {
-  /** Ana's star: her centre, then her rays and contacts */
+  /** Ana's star, standing apart on the left */
   anaHub: { from: 0.3, to: 0.7 },
-  anaRays: { from: 0.55, to: 1.7 },
+  anaRays: { from: 0.5, to: 1.6 },
 
-  /** Ben's star beside hers */
-  benHub: { from: 2.3, to: 2.7 },
-  benRays: { from: 2.5, to: 3.5 },
+  /** Ben's star, standing apart on the right */
+  benHub: { from: 2.4, to: 2.8 },
+  benRays: { from: 2.6, to: 3.6 },
 
-  /** the people both reach light up */
-  shared: { from: 4.1, to: 5.0 },
+  /** Ben lays his star over Ana's; the shared people and groups meet and light up */
+  join: { from: 4.3, to: 5.3 },
+  light: { from: 5.25, to: 5.8 },
 
-  /** everyone else fades */
-  fade: { from: 5.6, to: 6.3 },
+  /** everything else fades */
+  fade: { from: 6.3, to: 6.9 },
 
-  /** the shared people step into a row between the two and take their names */
-  gather: { from: 6.9, to: 7.9 },
-  names: { from: 7.65, to: 8.2 },
+  /** the stars dissolve; the shared items move into two lists and take their names */
+  dissolve: { from: 7.5, to: 8.1 },
+  order: { from: 7.6, to: 8.8 },
+  heads: { from: 8.4, to: 8.9 },
+  names: { from: 8.5, to: 9.2 },
 } as const;

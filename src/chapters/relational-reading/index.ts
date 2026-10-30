@@ -6,9 +6,9 @@ import { DURATION_S } from './timings';
 const principle = PRINCIPLES['relational-reading'];
 
 /**
- * Chapter 07 "Relational reading": Ana's star and Ben's star side by side.
- * What they have in common appears only where both reach the same people;
- * everyone else fades, and the people both know step forward by name.
+ * Chapter 07 "Relational reading": Ana's star and Ben's star stand apart,
+ * then Ben lays his over hers. What they share appears where both reach the
+ * same people and groups; everything else fades, and only two lists stay.
  */
 export const relationalReading: Chapter = {
   id: 'relational-reading',
@@ -18,10 +18,10 @@ export const relationalReading: Chapter = {
   durationS: DURATION_S,
   Scene: OverlaidStars,
   beats: [
-    { id: 'line', from: 0.3, hold: 1.8, caption: principle.line, emphasis: true, notes: principle.body },
-    { id: 'ben', from: 2.2, hold: 3.6, caption: 'Ben’s star stands beside Ana’s' },
-    { id: 'shared', from: 4.0, hold: 5.1, caption: 'Where both reach the same people, those light up' },
-    { id: 'fade', from: 5.5, hold: 6.4, caption: 'Everyone else stays in the dark' },
-    { id: 'names', from: 6.8, hold: 8.3, caption: 'What Ben reads: the people he knows himself', notes: principle.notes },
+    { id: 'line', from: 0.3, hold: 1.9, caption: principle.line, emphasis: true, notes: principle.body },
+    { id: 'ben', from: 2.3, hold: 3.9, caption: 'Ben has a star of his own' },
+    { id: 'join', from: 4.2, hold: 5.9, caption: 'Laid on top, the same people and groups meet' },
+    { id: 'fade', from: 6.2, hold: 7.1, caption: 'Everything else stays in the dark' },
+    { id: 'order', from: 7.4, hold: 9.5, caption: 'What Ben can read: the contacts and groups they share', notes: principle.notes },
   ],
 };

@@ -17,98 +17,149 @@ const easeInOut = Easing.bezier(0.65, 0, 0.35, 1);
 const prog = (frame: number, s: Span, e = ease) => interpolate(frame, [f(s.from), f(s.to)], [0, 1], { ...clamp, easing: e });
 
 /** The i-th of n items in a span, each taking `share` of it, staggered. */
-const stagger = (frame: number, s: Span, i: number, n: number, share = 0.4) => {
+const stagger = (frame: number, s: Span, i: number, n: number, share = 0.4, e = ease) => {
   const len = (s.to - s.from) * share;
   const start = s.from + ((s.to - s.from - len) * i) / Math.max(1, n - 1);
-  return prog(frame, { from: start, to: start + len });
+  return prog(frame, { from: start, to: start + len }, e);
 };
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 /*
- * The drawing, in units of a 400 × 300 box (the deck sketch), scaled onto
- * the stage. Both stars are irregular on purpose; the people both know sit
- * between the two centres.
+ * The drawing, in units of a 400 × 300 box, scaled onto the stage. Each star
+ * holds people (circles) and groups (rounded squares). Positions are where
+ * things stand once Ben has laid his star over Ana's; before that, Ana's
+ * star stands further left and Ben's further right.
  */
+type Item = { at: Pt; kind: 'person' | 'group'; name?: string };
+
 const ANA: Pt = [104, 152];
 const BEN: Pt = [296, 148];
-const SHARED: Pt[] = [[176, 46], [214, 98], [190, 158], [222, 214], [174, 258]];
-const NAMES = ['Lea', 'Tom', 'Mia', 'Jon', 'Eva'];
-const ANA_OWN: Pt[] = [[136, 92], [96, 26], [44, 58], [22, 122], [60, 150], [30, 196], [70, 262], [128, 284]];
-const BEN_OWN: Pt[] = [[290, 24], [350, 44], [384, 110], [338, 146], [372, 186], [340, 252], [282, 276]];
-/** where the shared people line up at the end: one column between the two */
-const ROW: Pt[] = NAMES.map((_, k) => [200, 46 + k * 52]);
+/** how far apart the two stars start, each to its own side */
+const APART = 64;
+
+const SHARED: Item[] = [
+  { at: [176, 46], kind: 'person', name: 'Lea' },
+  { at: [214, 100], kind: 'person', name: 'Tom' },
+  { at: [196, 160], kind: 'group', name: 'Garden group' },
+  { at: [224, 214], kind: 'person', name: 'Jon' },
+  { at: [158, 218], kind: 'group', name: 'Choir' },
+  { at: [180, 266], kind: 'person', name: 'Eva' },
+];
+const ANA_OWN: Item[] = [
+  { at: [96, 26], kind: 'person' },
+  { at: [44, 58], kind: 'group' },
+  { at: [136, 92], kind: 'person' },
+  { at: [22, 122], kind: 'person' },
+  { at: [56, 156], kind: 'group' },
+  { at: [30, 200], kind: 'person' },
+  { at: [76, 262], kind: 'group' },
+  { at: [124, 286], kind: 'person' },
+];
+const BEN_OWN: Item[] = [
+  { at: [290, 24], kind: 'person' },
+  { at: [352, 46], kind: 'group' },
+  { at: [384, 112], kind: 'person' },
+  { at: [344, 150], kind: 'person' },
+  { at: [374, 192], kind: 'group' },
+  { at: [338, 254], kind: 'person' },
+  { at: [276, 280], kind: 'group' },
+];
+
+/** Where the shared items stand at the end: contacts on the left, groups on the right. */
+const LIST_X = { person: 112, group: 288 };
+const LIST_TOP = 92;
+const LIST_STEP = 44;
+const listSlot = (() => {
+  const n = { person: 0, group: 0 };
+  return SHARED.map((s) => [LIST_X[s.kind], LIST_TOP + n[s.kind]++ * LIST_STEP] as Pt);
+})();
 
 /** rays reach out in turn, around the centre */
-const byAngle = (c: Pt) => (a: Pt, b: Pt) => Math.atan2(a[1] - c[1], a[0] - c[0]) - Math.atan2(b[1] - c[1], b[0] - c[0]);
+const angle = (c: Pt, p: Pt) => Math.atan2(p[1] - c[1], p[0] - c[0]);
 
 /** Where the 400 × 300 drawing stands on the stage. */
 function useBox(): { x: number; y: number; s: number } {
   const F = useFormat();
-  return F.square ? { x: 40, y: 260, s: 2.5 } : { x: 420, y: 236, s: 2.7 };
+  return F.square ? { x: 40, y: 270, s: 2.5 } : { x: 420, y: 236, s: 2.7 };
 }
 
-type Ray = { to: Pt; shared: number };
-
-const Star: React.FC<{ c: Pt; rays: Ray[]; span: Span; frame: number; others: number; lit: number[]; gather: number }> = ({
-  c,
-  rays,
-  span,
-  frame,
-  others,
-  lit,
-  gather,
-}) => (
-  <g>
-    {rays.map((r, i) => {
-      const t = stagger(frame, span, i, rays.length);
-      if (t <= 0) return null;
-      const shared = r.shared >= 0;
-      const h = shared ? lit[r.shared] : 0;
-      const end = shared ? [lerp(r.to[0], ROW[r.shared][0], gather), lerp(r.to[1], ROW[r.shared][1], gather)] : r.to;
-      const x2 = lerp(c[0], end[0], t);
-      const y2 = lerp(c[1], end[1], t);
-      return (
-        <g key={i} opacity={shared ? 1 : others}>
-          <line x1={c[0]} y1={c[1]} x2={x2} y2={y2} stroke={C.gray4} strokeWidth={1.4} strokeLinecap="round" opacity={1 - h} />
-          {shared && h > 0 ? <line x1={c[0]} y1={c[1]} x2={x2} y2={y2} stroke={C.accent} strokeWidth={1.4 + 0.8 * h} strokeLinecap="round" opacity={h} /> : null}
-        </g>
-      );
-    })}
-  </g>
-);
+/** A person or a group, at its size: a circle, or a rounded square with three members. */
+const Mark: React.FC<{ at: Pt; kind: Item['kind']; fill: string; stroke: string; opacity: number }> = ({ at, kind, fill, stroke, opacity }) =>
+  kind === 'person' ? (
+    <circle cx={at[0]} cy={at[1]} r={7} fill={fill} stroke={stroke} strokeWidth={1.8} opacity={opacity} />
+  ) : (
+    <g opacity={opacity}>
+      <rect x={at[0] - 9} y={at[1] - 9} width={18} height={18} rx={5} fill={fill} stroke={stroke} strokeWidth={1.8} />
+      <circle cx={at[0] - 3.4} cy={at[1] - 2.6} r={1.9} fill={stroke} />
+      <circle cx={at[0] + 3.4} cy={at[1] - 2.6} r={1.9} fill={stroke} />
+      <circle cx={at[0]} cy={at[1] + 3.4} r={1.9} fill={stroke} />
+    </g>
+  );
 
 /**
- * Chapter 07's scene: Ana's star, Ben's star beside it, the people both
- * reach lighting up, everyone else fading, and the shared people stepping
- * into a row between the two, with their names.
+ * Chapter 07's scene. Two stars stand apart; Ben lays his over Ana's, and
+ * the people and groups both know meet in the same places and light up.
+ * Everything else fades, then the stars dissolve and only two lists stay:
+ * the contacts and the groups they share.
  */
 export const OverlaidStars: React.FC = () => {
   const frame = useCurrentFrame();
   const box = useBox();
 
+  const join = prog(frame, T.join, easeInOut);
+  /** the two copies of a shared item meet, then one merged mark takes over */
+  const merged = interpolate(join, [0.92, 1], [0, 1], clamp);
+  const lit = SHARED.map((_, i) => stagger(frame, T.light, i, SHARED.length, 0.5));
   const fade = prog(frame, T.fade);
-  const gather = prog(frame, T.gather, easeInOut);
-  const names = prog(frame, T.names);
-  const others = (1 - 0.85 * fade) * (1 - gather);
-  const lit = SHARED.map((_, i) => stagger(frame, T.shared, i, SHARED.length, 0.45));
+  const dissolve = prog(frame, T.dissolve);
+  const order = SHARED.map((_, i) => stagger(frame, T.order, i, SHARED.length, 0.55, easeInOut));
+  const heads = prog(frame, T.heads);
+  const names = SHARED.map((_, i) => stagger(frame, T.names, i, SHARED.length, 0.5));
 
-  const anaRays: Ray[] = [...ANA_OWN.map((to) => ({ to, shared: -1 })), ...SHARED.map((to, i) => ({ to, shared: i }))].sort((a, b) => byAngle(ANA)(a.to, b.to));
-  const benRays: Ray[] = [...BEN_OWN.map((to) => ({ to, shared: -1 })), ...SHARED.map((to, i) => ({ to, shared: i }))].sort((a, b) => byAngle(BEN)(a.to, b.to));
+  const others = (1 - 0.88 * fade) * (1 - dissolve);
+  const anaOff: Pt = [-APART * (1 - join), 0];
+  const benOff: Pt = [APART * (1 - join), 0];
+  const add = (p: Pt, o: Pt): Pt => [p[0] + o[0], p[1] + o[1]];
 
-  // a contact appears once the ray that reaches it is mostly drawn
-  const reached = (c: Pt, span: Span, rays: Ray[], to: Pt) => {
-    const i = rays.findIndex((r) => r.to === to);
-    return interpolate(stagger(frame, span, i, rays.length), [0.7, 1], [0, 1], clamp);
+  const anaC = add(ANA, anaOff);
+  const benC = add(BEN, benOff);
+
+  /** one star: its rays grow in turn, each item appears as its ray arrives */
+  const star = (c: Pt, off: Pt, own: Item[], span: Span, side: 'a' | 'b') => {
+    const items = [...own.map((it) => ({ it, shared: -1 })), ...SHARED.map((it, i) => ({ it, shared: i }))].sort(
+      (p, q) => angle(c, add(p.it.at, off)) - angle(c, add(q.it.at, off)),
+    );
+    return items.map(({ it, shared }, k) => {
+      const t = stagger(frame, span, k, items.length);
+      if (t <= 0) return null;
+      const isShared = shared >= 0;
+      const h = isShared ? lit[shared] : 0;
+      const at = add(it.at, off);
+      const seen = interpolate(t, [0.7, 1], [0, 1], clamp);
+      const rayOp = isShared ? 1 - dissolve : others;
+      const x2 = lerp(c[0], at[0], t);
+      const y2 = lerp(c[1], at[1], t);
+      return (
+        <g key={`${side}${k}`}>
+          <g opacity={rayOp}>
+            <line x1={c[0]} y1={c[1]} x2={x2} y2={y2} stroke={C.gray4} strokeWidth={1.3} strokeLinecap="round" opacity={1 - 0.7 * h} />
+            {h > 0 ? <line x1={c[0]} y1={c[1]} x2={x2} y2={y2} stroke={C.accent} strokeWidth={1.5} strokeLinecap="round" opacity={0.6 * h} /> : null}
+          </g>
+          {/* own items are drawn here; shared ones once, below, so they can leave for the lists */}
+          {!isShared ? <Mark at={at} kind={it.kind} fill={C.bg} stroke={C.gray3} opacity={seen * others} /> : null}
+          {isShared && merged < 1 ? <Mark at={at} kind={it.kind} fill={C.bg} stroke={C.gray3} opacity={seen * (1 - merged)} /> : null}
+        </g>
+      );
+    });
   };
 
-  const anaHub = prog(frame, T.anaHub);
-  const benHub = prog(frame, T.benHub);
-
+  const anaHub = prog(frame, T.anaHub) * (1 - dissolve);
+  const benHub = prog(frame, T.benHub) * (1 - dissolve);
   const hub = (c: Pt, t: number, who: 'A' | 'B') =>
     t > 0 ? (
-      <g transform={`translate(${c[0]} ${c[1]}) scale(${0.6 + 0.4 * t})`} opacity={t}>
-        <circle r={22} fill={PEOPLE[who].tone.stage} />
+      <g transform={`translate(${c[0]} ${c[1]}) scale(${0.7 + 0.3 * t})`} opacity={t}>
+        <circle r={21} fill={PEOPLE[who].tone.stage} />
         <text y={5} textAnchor="middle" fontFamily={FONT} fontSize={12.5} fontWeight={700} fill={C.bg}>
           {PEOPLE[who].name}
         </text>
@@ -116,57 +167,58 @@ export const OverlaidStars: React.FC = () => {
     ) : null;
 
   return (
-    <svg
-      viewBox="0 0 400 300"
-      width={400 * box.s}
-      height={300 * box.s}
-      style={{ position: 'absolute', left: box.x, top: box.y, overflow: 'visible' }}
-    >
-      <Star c={ANA} rays={anaRays} span={T.anaRays} frame={frame} others={others} lit={lit} gather={gather} />
-      <Star c={BEN} rays={benRays} span={T.benRays} frame={frame} others={others} lit={lit} gather={gather} />
+    <svg viewBox="0 0 400 300" width={400 * box.s} height={300 * box.s} style={{ position: 'absolute', left: box.x, top: box.y, overflow: 'visible' }}>
+      {star(anaC, anaOff, ANA_OWN, T.anaRays, 'a')}
+      {star(benC, benOff, BEN_OWN, T.benRays, 'b')}
 
-      {/* contacts only one of them knows */}
-      {ANA_OWN.map((p, i) => {
-        const t = reached(ANA, T.anaRays, anaRays, p);
-        return t > 0 ? <circle key={`a${i}`} cx={p[0]} cy={p[1]} r={7} fill={C.bg} stroke={C.gray3} strokeWidth={1.8} opacity={t * others} /> : null;
-      })}
-      {BEN_OWN.map((p, i) => {
-        const t = reached(BEN, T.benRays, benRays, p);
-        return t > 0 ? <circle key={`b${i}`} cx={p[0]} cy={p[1]} r={7} fill={C.bg} stroke={C.gray3} strokeWidth={1.8} opacity={t * others} /> : null;
-      })}
-
-      {/* the people both know: light up, then step into the row and become name tags */}
-      {SHARED.map((p, i) => {
-        const seen = reached(ANA, T.anaRays, anaRays, p);
-        if (seen <= 0) return null;
+      {/* the shared items, once both stars lie on top of each other: they light up, then move into the lists */}
+      {SHARED.map((it, i) => {
+        if (merged <= 0) return null;
         const h = lit[i];
-        const x = lerp(p[0], ROW[i][0], gather);
-        const y = lerp(p[1], ROW[i][1], gather);
-        const w = lerp(14, 70, gather);
-        const ht = lerp(14, 28, gather);
+        const o = order[i];
+        const slot = listSlot[i];
+        const x = lerp(it.at[0], slot[0], o);
+        const y = lerp(it.at[1], slot[1], o);
+        const w = lerp(it.kind === 'person' ? 14 : 18, 128, o);
+        const ht = lerp(it.kind === 'person' ? 14 : 18, 30, o);
+        const r = lerp(it.kind === 'person' ? 7 : 5, 8, o);
+        const stroke = h > 0 ? C.accent : C.gray3;
         return (
-          <g key={`s${i}`} opacity={seen}>
-            <circle cx={x} cy={y} r={13 * h * (1 - gather)} fill={C.accent} opacity={0.28} />
+          <g key={`s${i}`} opacity={merged}>
             <rect
               x={x - w / 2}
               y={y - ht / 2}
               width={w}
               height={ht}
-              rx={ht / 2}
+              rx={r}
               fill={h > 0 ? C.tint : C.bg}
-              stroke={h > 0 ? C.accent : C.gray3}
-              strokeWidth={1.8}
+              fillOpacity={h > 0 ? 0.5 : 1}
+              stroke={stroke}
+              strokeOpacity={0.6 - 0.15 * o}
+              strokeWidth={1.6}
             />
-            <circle cx={x} cy={y} r={4.5 * h * (1 - gather)} fill={C.accentHigh} />
-            <text x={x} y={y + 4.6} textAnchor="middle" fontFamily={FONT} fontSize={13} fontWeight={600} fill={C.white} opacity={names}>
-              {NAMES[i]}
+            {it.kind === 'group' ? (
+              <g opacity={1 - o}>
+                <circle cx={x - 3.4} cy={y - 2.6} r={1.9} fill={stroke} />
+                <circle cx={x + 3.4} cy={y - 2.6} r={1.9} fill={stroke} />
+                <circle cx={x} cy={y + 3.4} r={1.9} fill={stroke} />
+              </g>
+            ) : null}
+            <text x={x} y={y + 4.5} textAnchor="middle" fontFamily={FONT} fontSize={12.5} fontWeight={600} fill={C.white} opacity={names[i]}>
+              {it.name}
             </text>
           </g>
         );
       })}
 
-      {hub(ANA, anaHub, 'A')}
-      {hub(BEN, benHub, 'B')}
+      {/* the two lists' headings */}
+      <g opacity={heads} fontFamily={FONT} fontSize={11} fontWeight={600} letterSpacing={1.2} fill={C.gray3} textAnchor="middle">
+        <text x={LIST_X.person} y={LIST_TOP - 34}>CONTACTS IN COMMON</text>
+        <text x={LIST_X.group} y={LIST_TOP - 34}>GROUPS IN COMMON</text>
+      </g>
+
+      {hub(anaC, anaHub, 'A')}
+      {hub(benC, benHub, 'B')}
     </svg>
   );
 };
