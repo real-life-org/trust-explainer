@@ -18,7 +18,7 @@ type RaySpec = { from: 'A' | 'B'; to: Item };
 const centre = (who: 'A' | 'B'): Pt => (who === 'A' ? ANA : BEN);
 const dist = (a: Pt, b: Pt) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
-const RAY_DUR = 0.5;
+const RAY_DUR = 0.55;
 const EXTRA_DUR = 0.4;
 
 /** Ana's and Ben's rays, nearest first: the network grows outward from the two */
@@ -27,8 +27,13 @@ const RAYS: Array<RaySpec & { from_s: number }> = (() => {
     ...[...ANA_OWN, ...SHARED].map((to) => ({ from: 'A' as const, to })),
     ...[...BEN_OWN, ...SHARED].map((to) => ({ from: 'B' as const, to })),
   ];
-  all.sort((p, q) => dist(centre(p.from), p.to.at) - dist(centre(q.from), q.to.at));
-  return all.map((r, i) => ({ ...r, from_s: N.grow.from + i * 0.085 }));
+  // people first, nearest first; groups come last, with the step that shows them
+  const people = all.filter((r) => r.to.kind === 'person').sort((p, q) => dist(centre(p.from), p.to.at) - dist(centre(q.from), q.to.at));
+  const groups = all.filter((r) => r.to.kind === 'group');
+  return [
+    ...people.map((r, i) => ({ ...r, from_s: N.grow.from + i * 0.16 })),
+    ...groups.map((r, i) => ({ ...r, from_s: N.groups.from + i * 0.05 })),
+  ];
 })();
 
 /** when each person or group appears: as the first ray reaches them */
@@ -133,7 +138,7 @@ export const Network: React.FC = () => {
           <Ray key={i} a={centre(r.from)} b={r.to.at} t={t(r.from_s, RAY_DUR)} />
         ))}
         {ITEMS.map((it) => (
-          <Mark key={it.id} at={it.at} kind={it.kind} idx={it.c} opacity={t(APPEAR[it.id] - 0.1, 0.2)} />
+          <Mark key={it.id} id={it.id} at={it.at} kind={it.kind} idx={it.c} opacity={t(APPEAR[it.id] - 0.1, 0.2)} />
         ))}
         <Hub at={hubAt('A')} who="A" opacity={dots} scale={0.7 + 0.3 * dots} />
         <Hub at={hubAt('B')} who="B" opacity={dots} scale={0.7 + 0.3 * dots} />

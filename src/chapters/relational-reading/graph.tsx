@@ -2,6 +2,7 @@ import React from 'react';
 import { useFormat } from '../../kit/format';
 import { PEOPLE } from '../../kit/cast';
 import { C, FONT } from '../../kit/theme';
+import { LAYOUT } from './graph-layout';
 
 /*
  * One network, shared by chapter 03 (where it grows) and chapter 07 (where
@@ -13,59 +14,55 @@ import { C, FONT } from '../../kit/theme';
 export type Pt = [number, number];
 export type Item = { id: string; at: Pt; kind: 'person' | 'group'; name?: string; c: number };
 
-export const ANA: Pt = [104, 152];
-export const BEN: Pt = [296, 148];
-/** how far each star moves to its own side when the network falls apart */
-export const APART = 64;
+/** the names the network's people and groups carry where the story names them */
+const NAMES: Record<string, string> = { s1: 'Lea', s2: 'Jon' };
 
+/* ---- read the layout: positions fitted into the 400 × 300 box ---- */
+const RAW = LAYOUT.positions as Record<string, readonly [number, number]>;
+const fitBox = (() => {
+  const ps = Object.values(RAW);
+  const xs = ps.map((p) => p[0]);
+  const ys = ps.map((p) => p[1]);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  const k = Math.min(352 / (x1 - x0), 252 / (y1 - y0));
+  return (p: readonly [number, number]): Pt => [200 + (p[0] - (x0 + x1) / 2) * k, 150 + (p[1] - (y0 + y1) / 2) * k];
+})();
+const LINKS = LAYOUT.links as ReadonlyArray<readonly [string, string]>;
+const linked = (id: string) => LINKS.filter((l) => l[0] === id || l[1] === id).map((l) => (l[0] === id ? l[1] : l[0]));
+const toneIndex = (t: string | undefined) => Number(/--p(\d)/.exec(t ?? '')?.[1] ?? 0);
+const desc = Object.fromEntries((LAYOUT.nodes as ReadonlyArray<{ id: string; tone?: string; group?: string }>).map((n) => [n.id, n]));
+const toItem = (id: string): Item => {
+  const d = desc[id];
+  return d.group ? { id, at: fitBox(RAW[id]), kind: 'group', name: d.group, c: 0 } : { id, at: fitBox(RAW[id]), kind: 'person', name: NAMES[id], c: toneIndex(d.tone) };
+};
+
+export const ANA: Pt = fitBox(RAW.A);
+export const BEN: Pt = fitBox(RAW.B);
+/** how far each star moves to its own side when the network falls apart */
+export const APART = 72;
+
+const anaKnows = linked('A').filter((x) => x !== 'B');
+const benKnows = linked('B').filter((x) => x !== 'A');
 /** the people and groups both Ana and Ben know */
-export const SHARED: Item[] = [
-  { id: 's0', at: [176, 46], kind: 'person', name: 'Lea', c: 0 },
-  { id: 's1', at: [214, 100], kind: 'person', name: 'Tom', c: 1 },
-  { id: 's2', at: [196, 160], kind: 'group', name: 'Garden group', c: 2 },
-  { id: 's3', at: [224, 214], kind: 'person', name: 'Jon', c: 3 },
-  { id: 's4', at: [158, 218], kind: 'group', name: 'Choir', c: 4 },
-  { id: 's5', at: [180, 266], kind: 'person', name: 'Eva', c: 5 },
-];
+export const SHARED: Item[] = anaKnows.filter((x) => benKnows.includes(x)).map(toItem);
 /** only Ana knows these */
-export const ANA_OWN: Item[] = [
-  { id: 'a0', at: [96, 26], kind: 'person', c: 0 },
-  { id: 'a1', at: [44, 58], kind: 'group', c: 1 },
-  { id: 'a2', at: [136, 92], kind: 'person', c: 2 },
-  { id: 'a3', at: [22, 122], kind: 'person', c: 3 },
-  { id: 'a4', at: [56, 156], kind: 'group', c: 4 },
-  { id: 'a5', at: [30, 200], kind: 'person', c: 5 },
-  { id: 'a6', at: [76, 262], kind: 'group', c: 6 },
-  { id: 'a7', at: [124, 286], kind: 'person', c: 7 },
-];
+export const ANA_OWN: Item[] = anaKnows.filter((x) => !benKnows.includes(x)).map(toItem);
 /** only Ben knows these */
-export const BEN_OWN: Item[] = [
-  { id: 'b0', at: [290, 24], kind: 'person', c: 3 },
-  { id: 'b1', at: [352, 46], kind: 'group', c: 4 },
-  { id: 'b2', at: [384, 112], kind: 'person', c: 5 },
-  { id: 'b3', at: [344, 150], kind: 'person', c: 6 },
-  { id: 'b4', at: [374, 192], kind: 'group', c: 7 },
-  { id: 'b5', at: [338, 254], kind: 'person', c: 8 },
-  { id: 'b6', at: [276, 280], kind: 'group', c: 9 },
-];
+export const BEN_OWN: Item[] = benKnows.filter((x) => !anaKnows.includes(x)).map(toItem);
 export const ITEMS: Item[] = [...ANA_OWN, ...SHARED, ...BEN_OWN];
 export const item = (id: string): Item => ITEMS.find((i) => i.id === id)!;
 
-/**
- * Relationships among the others: people who know each other, and the
- * members of a group. They belong to the network, not to Ana's or Ben's
- * star, so they fade when the network falls apart into the two stars.
- */
-export const EXTRA: Array<[string, string]> = [
-  ['a0', 's0'], ['a2', 's1'], ['a3', 'a5'], ['a5', 'a7'], ['s0', 'b0'], ['b2', 'b3'], ['b3', 'b5'], ['s3', 's5'], ['s1', 's3'],
-  ['s2', 's1'], ['s2', 's3'], ['s4', 's5'], ['s4', 'a7'], ['a1', 'a0'], ['a1', 'a3'], ['b1', 'b0'], ['b1', 'b2'], ['b4', 'b3'], ['b4', 'b5'], ['a4', 'a3'], ['a4', 'a5'], ['a6', 'a7'], ['b6', 'b5'],
-];
+/** relationships among the others, and memberships: everything not drawn from Ana or Ben */
+export const EXTRA: Array<[string, string]> = LINKS.filter((l) => !['A', 'B'].includes(l[0]) && !['A', 'B'].includes(l[1])).map((l) => [l[0], l[1]]);
 
-/** two groups shown as the soft area around their members, with their names */
-export const GROUP_AREAS: Array<{ group: string; members: string[]; label: { at: Pt; anchor: 'start' | 'end' } }> = [
-  { group: 's2', members: ['s1', 's3'], label: { at: [262, 112], anchor: 'start' } },
-  { group: 's4', members: ['s5', 'a7'], label: { at: [100, 222], anchor: 'end' } },
-];
+/** a group's members, Ana and Ben first */
+export const membersOf = (gid: string): string[] => {
+  const m = linked(gid).filter((x) => desc[x] && !desc[x].group);
+  return m.sort((x, y) => Number(!['A', 'B'].includes(x)) - Number(!['A', 'B'].includes(y)));
+};
+
+/** groups are nodes now; the areas of the earlier drawing are gone */
+export const GROUP_AREAS: Array<{ group: string; members: string[]; label: { at: Pt; anchor: 'start' | 'end' } }> = [];
 
 /** Where the 400 × 300 drawing stands on the stage. */
 export function useGraphBox(): { x: number; y: number; s: number; at: (p: Pt) => Pt } {
@@ -76,21 +73,27 @@ export function useGraphBox(): { x: number; y: number; s: number; at: (p: Pt) =>
 
 /** Soft fills for people, so each one reads as someone, and the three dot colours of a group. */
 export const PERSON_FILL = ['oklch(82% 0.07 300)', 'oklch(84% 0.07 60)', 'oklch(80% 0.015 265)', 'oklch(82% 0.07 155)', 'oklch(80% 0.06 230)', 'oklch(84% 0.06 20)'];
-const DOT = [C.accent, 'oklch(68% 0.15 145)', 'oklch(76% 0.14 60)'];
-const DOT_AT: Pt[] = [[-3.7, -2.4], [3.7, -2.4], [0, 3.9]];
 
 /** A person (a filled circle) or a group (a dashed circle with three members), in box units. */
-export const Mark: React.FC<{ at: Pt; kind: Item['kind']; idx: number; opacity: number; scale?: number }> = ({ at, kind, idx, opacity, scale = 1 }) =>
-  kind === 'person' ? (
-    <circle cx={at[0]} cy={at[1]} r={8 * scale} fill={PERSON_FILL[idx % PERSON_FILL.length]} opacity={opacity} />
-  ) : (
+const memberTone = (id: string) => (id === 'A' ? PEOPLE.A.tone.stage : id === 'B' ? PEOPLE.B.tone.stage : PERSON_FILL[toneIndex(desc[id]?.tone) % PERSON_FILL.length]);
+
+/** A person (a filled circle) or a group (a dashed circle with one dot per member, in their colours), in box units. */
+export const Mark: React.FC<{ id?: string; at: Pt; kind: Item['kind']; idx: number; opacity: number; scale?: number }> = ({ id, at, kind, idx, opacity, scale = 1 }) => {
+  if (kind === 'person') return <circle cx={at[0]} cy={at[1]} r={8 * scale} fill={PERSON_FILL[idx % PERSON_FILL.length]} opacity={opacity} />;
+  const mem = id ? membersOf(id) : [];
+  const k = mem.length;
+  const R = 11.5 + 1.6 * Math.max(1, k);
+  const rr = k <= 1 ? 0 : Math.min(R - 5.5, 3 + 1.5 * k);
+  return (
     <g opacity={opacity} transform={`translate(${at[0]} ${at[1]}) scale(${scale})`}>
-      <circle r={10} fill={C.bg} stroke={C.gray3} strokeWidth={1.4} strokeDasharray="2.6 2.4" />
-      {DOT_AT.map((d, k) => (
-        <circle key={k} cx={d[0]} cy={d[1]} r={2.3} fill={DOT[(k + idx) % 3]} />
-      ))}
+      <circle r={R} fill={C.bg} stroke={C.gray3} strokeWidth={1.4} strokeDasharray="2.6 2.4" />
+      {mem.map((m, i) => {
+        const t = -Math.PI / 2 + (i * 2 * Math.PI) / Math.max(k, 1);
+        return <circle key={m} cx={rr * Math.cos(t)} cy={rr * Math.sin(t)} r={k === 1 ? 3.8 : 3.2} fill={memberTone(m)} />;
+      })}
     </g>
   );
+};
 
 /** A star's centre: the person's colour, their name inside (box units). */
 export const Hub: React.FC<{ at: Pt; who: 'A' | 'B'; opacity: number; scale?: number }> = ({ at, who, opacity, scale = 1 }) =>

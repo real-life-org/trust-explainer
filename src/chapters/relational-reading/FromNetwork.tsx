@@ -18,7 +18,7 @@ const Star: React.FC<{ c: Pt; own: Item[]; who: 'A' | 'B'; dx: number }> = ({ c,
       <Ray key={it.id} a={c} b={it.at} />
     ))}
     {[...own, ...SHARED].map((it) => (
-      <Mark key={`m${it.id}`} at={it.at} kind={it.kind} idx={it.c} opacity={1} />
+      <Mark key={`m${it.id}`} id={it.id} at={it.at} kind={it.kind} idx={it.c} opacity={1} />
     ))}
     <Hub at={c} who={who} opacity={1} />
   </g>
