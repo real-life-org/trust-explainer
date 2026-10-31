@@ -39,7 +39,7 @@ const toItem = (id: string): Item => {
 export const ANA: Pt = fitBox(RAW.A);
 export const BEN: Pt = fitBox(RAW.B);
 /** how far each star moves to its own side when the network falls apart */
-export const APART = 72;
+export const APART = 56;
 
 const anaKnows = linked('A').filter((x) => x !== 'B');
 const benKnows = linked('B').filter((x) => x !== 'A');

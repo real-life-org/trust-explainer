@@ -25,7 +25,7 @@ const networkPart: Part = {
   beats: [
     { id: 'pair', from: 0, hold: 2.9, caption: 'Now Ana and Ben are connected' },
     { id: 'network', from: 3.2, hold: 6.6, caption: 'Encounter by encounter, the network grows' },
-    { id: 'groups', from: 6.9, hold: 8.0, caption: 'Where links grow dense, groups appear', notes: principle.notes },
+    { id: 'groups', from: 6.9, hold: 8.0, caption: 'Groups join the network', notes: principle.notes },
   ],
 };
 
