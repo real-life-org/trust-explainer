@@ -51,4 +51,4 @@ export const N = {
 } as const;
 
 /** the moment of the encounter, on its own timeline, the closing part starts from: both contacts made */
-export const ENCOUNTER_END_S = 16.1;
+export const ENCOUNTER_END_S = 16.6;

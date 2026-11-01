@@ -42,7 +42,7 @@ export const ScanCode: React.FC<{ recognizedAt: number }> = ({ recognizedAt }) =
           height: outer,
           boxSizing: 'border-box',
           borderRadius: 14,
-          border: `3px ${ok > 0.5 ? 'solid' : 'dashed'} ${frameColor}`,
+          border: `${ok > 0.5 ? 6 : 3}px ${ok > 0.5 ? 'solid' : 'dashed'} ${frameColor}`,
         }}
       />
       <At top={CODE.cy + 210}>
