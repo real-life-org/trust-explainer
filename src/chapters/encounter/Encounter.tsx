@@ -4,7 +4,6 @@ import { interpolate, spring } from '../../kit/motion';
 import { PEOPLE } from '../../kit/cast';
 import { SCREEN } from '../../kit/geometry';
 import { Phone } from '../../kit/Phone';
-import { NameTag } from '../../kit/stage';
 import { clamp, f } from '../../kit/time';
 import { T } from './timings';
 import { CODE, phonePose, useLayout } from './layout';
@@ -34,21 +33,11 @@ export const Encounter: React.FC = () => {
     interpolate(frame, [f(T.scanMove.from), f(T.scanMove.from) + 10], [0, 1], clamp) *
     interpolate(frame, [f(T.moveAway.from), f(T.moveAway.from) + 8], [1, 0], clamp);
 
-  // the name tags dim while the phones are away from home
-  const away = interpolate(
-    frame,
-    [f(T.scanMove.from), f(T.scanMove.from) + 10, f(T.moveAway.to) - 6, f(T.moveAway.to) + 6],
-    [1, 0.25, 0.25, 1],
-    clamp,
-  );
 
   const toEnd = (from: number) => ({ from: f(from), durationInFrames: durationInFrames - f(from) });
 
   return (
     <>
-      <NameTag who="A" at={L.home.A} s={L.s} F={L} dim={away} />
-      <NameTag who="B" at={L.home.B} s={L.s} F={L} dim={away} />
-
       {/* Ana */}
       <Phone owner="A" pose={phonePose('A', frame, L)} s={L.s} opacity={intro} lift={(1 - intro) * 40} zIndex={10}>
         <Sequence name="Ana shows her code" {...span(T.qrOnAna)}>

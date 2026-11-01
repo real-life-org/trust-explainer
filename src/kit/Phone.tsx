@@ -5,8 +5,8 @@ import { ORIGIN, PHONE, type Pose, SCREEN } from './geometry';
 import { Avatar } from './ui';
 
 /**
- * A phone in the simulator's look, drawn as a modern handset: graphite metal
- * rim, black bezel, dynamic island and status bar, side buttons, a faint
+ * A phone in the simulator's look, drawn as a modern handset: a metal rim in
+ * the owner's colour, black bezel, dynamic island and status bar, side buttons, a faint
  * glass sheen. The owner's avatar and name sit in the top right corner of
  * the app content on every screen.
  * `hole` cuts a square (screen-local centre and size) out of the whole
@@ -43,6 +43,7 @@ export const Phone: React.FC<{
         }
       : {};
   const screenRadius = PHONE.radius - PHONE.inset;
+  const rim = rimTones(owner);
   return (
     <div
       style={{
@@ -58,19 +59,19 @@ export const Phone: React.FC<{
       }}
     >
       {/* side buttons sit outside the body and stay out of the viewfinder mask */}
-      <SideButton side="left" top={128} h={34} />
-      <SideButton side="left" top={186} h={58} />
-      <SideButton side="left" top={256} h={58} />
-      <SideButton side="right" top={206} h={92} />
+      <SideButton side="left" top={128} h={34} rim={rim} />
+      <SideButton side="left" top={186} h={58} rim={rim} />
+      <SideButton side="left" top={256} h={58} rim={rim} />
+      <SideButton side="right" top={206} h={92} rim={rim} />
 
       <div style={{ position: 'absolute', inset: 0, ...mask }}>
-        {/* rim: brushed graphite, lit from the top left */}
+        {/* rim: brushed metal in the owner's colour, lit from the top left */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             borderRadius: PHONE.radius,
-            background: `linear-gradient(140deg, ${C.rimHigh} 0%, ${C.rim} 22%, ${C.rimLow} 55%, ${C.rim} 85%, ${C.rimHigh} 100%)`,
+            background: `linear-gradient(140deg, ${rim.high} 0%, ${rim.mid} 22%, ${rim.low} 55%, ${rim.mid} 85%, ${rim.high} 100%)`,
             boxShadow: [
               '0 2px 4px oklch(0% 0 0 / 0.4)',
               '0 24px 40px -12px oklch(0% 0 0 / 0.55)',
@@ -134,7 +135,14 @@ export const Phone: React.FC<{
   );
 };
 
-const SideButton: React.FC<{ side: 'left' | 'right'; top: number; h: number }> = ({ side, top, h }) => (
+/** The rim's three tones, from the owner's stage colour. */
+type Rim = { high: string; mid: string; low: string };
+const rimTones = (who: Who): Rim => {
+  const c = PEOPLE[who].tone.stage;
+  return { high: `color-mix(in oklch, ${c}, white 35%)`, mid: c, low: `color-mix(in oklch, ${c}, black 40%)` };
+};
+
+const SideButton: React.FC<{ side: 'left' | 'right'; top: number; h: number; rim: Rim }> = ({ side, top, h, rim }) => (
   <div
     style={{
       position: 'absolute',
@@ -143,7 +151,7 @@ const SideButton: React.FC<{ side: 'left' | 'right'; top: number; h: number }> =
       width: 6,
       height: h,
       borderRadius: 3,
-      background: `linear-gradient(90deg, ${C.rimLow}, ${C.rimHigh} 50%, ${C.rimLow})`,
+      background: `linear-gradient(90deg, ${rim.low}, ${rim.high} 50%, ${rim.low})`,
     }}
   />
 );
